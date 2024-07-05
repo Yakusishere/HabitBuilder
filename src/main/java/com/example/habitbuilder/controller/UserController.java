@@ -3,9 +3,9 @@ package com.example.habitbuilder.controller;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IUserService;
-import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +23,9 @@ public class UserController {
     @Autowired
     private IUserService userService;
     @PostMapping("/register")
-    public Result register(String username, String password){
+    public Result register(@RequestBody User userRequest){
+        String username=userRequest.getUserName();
+        String password=userRequest.getPassword();
         boolean flag=userService.findByUserName(username);
         if(!flag){
             userService.register(username,password);
@@ -33,7 +35,9 @@ public class UserController {
         }
     }
     @PostMapping("/login")
-    public Result login(String username,String password){
+    public Result login(@RequestBody User userRequest){
+        String username=userRequest.getUserName();
+        String password=userRequest.getPassword();
         boolean flag=userService.login(username,password);
         if(!flag){
             return Result.error("用户名或密码错误");
