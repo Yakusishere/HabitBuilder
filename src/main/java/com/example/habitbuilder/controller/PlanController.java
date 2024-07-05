@@ -7,6 +7,8 @@ import com.example.habitbuilder.service.IPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -25,12 +27,20 @@ public class PlanController {
     @Autowired
     private IPlanService iPlanService;
     @PostMapping("/createEvent")
-    public Result createEvent(int planId,String eventDescription,String startTime,String endTime){
-        iEventService.createEvent(planId,eventDescription,startTime,endTime);
+    public Result createEvent(@RequestBody Event eventRequest) {
+        int planId = eventRequest.getPlanId();
+        String eventDescription = eventRequest.getDescription();
+        LocalTime startTime = eventRequest.getStartTime();
+        LocalTime endTime = eventRequest.getEndTime();
+        iEventService.createEvent(planId, eventDescription, startTime, endTime);
         return Result.success("创建事件成功");
     }
     @PutMapping("/changeEvent")
-    public Result changeEvent(int eventId,String eventDescription,String startTime,String endTime){
+    public Result changeEvent(@RequestBody Event eventRequest){
+        int eventId = eventRequest.getEventId();
+        String eventDescription = eventRequest.getDescription();
+        LocalTime startTime = eventRequest.getStartTime();
+        LocalTime endTime = eventRequest.getEndTime();
         boolean flag=iEventService.changeEvent(eventId,eventDescription,startTime,endTime);
         if(!flag){
             return Result.error("事件不存在");
@@ -38,7 +48,10 @@ public class PlanController {
         return Result.success("修改事件成功");
     }
     @GetMapping("/deleteEvent")
-    public Result deleteEvent(int eventId){
+    public Result deleteEvent(@RequestParam Integer eventId){
+        if(eventId==null){
+            return Result.error("事件不存在");
+        }
         boolean flag=iEventService.deleteEvent(eventId);
         if(!flag){
             return Result.error("事件不存在");
@@ -46,7 +59,7 @@ public class PlanController {
         return Result.success("删除成功");
     }
     @PutMapping("/completeEvent")
-    public Result completeEvent(int eventId){
+    public Result completeEvent(@RequestParam int eventId){
         boolean flag=iEventService.completeEvent(eventId);
         if(!flag){
             return Result.error("事件不存在");
@@ -54,7 +67,7 @@ public class PlanController {
         return Result.success("完成成功");
     }
     @GetMapping("/dailyPlanType")
-    public Result dailyPlanType(String date){
+    public Result dailyPlanType(@RequestParam LocalDate date){
         List<String>plans =iPlanService.dailyPlanType(date);
         if(plans.isEmpty()){
             return Result.error("今天没有计划");
@@ -62,7 +75,9 @@ public class PlanController {
         return Result.success(plans,"查找成功");
     }
     @GetMapping("/eventInPlan")
-    public Result eventInPlan(String date,int planId){
+    public Result eventInPlan(@RequestBody Event eventRequest){
+        int planId = eventRequest.getPlanId();
+        LocalDate date=eventRequest.getExecutionDate();
         List<Event>events=iEventService.eventInPlan(date,planId);
         if(events.isEmpty()){
             return Result.error("计划中没有事件");
@@ -70,7 +85,7 @@ public class PlanController {
         return Result.success(events,"查找成功");
     }
     @GetMapping("/dailyEvent")
-    public Result dailyEvent(String date){
+    public Result dailyEvent(@RequestParam LocalDate date){
         List<Event>events =iEventService.dailyEvent(date);
         if(events.isEmpty()){
             return Result.error("今天没有计划");

@@ -30,24 +30,18 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     @Autowired
     private EventMapper eventMapper;
     @Override
-    public void createEvent(int planId,String eventDescription, String startTime, String endTime) {
+    public void createEvent(int planId,String eventDescription, LocalTime startTime, LocalTime endTime) {
         LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalTime start = LocalTime.parse(startTime, formatter);
-        LocalTime end = LocalTime.parse(endTime, formatter);
-        eventMapper.insert(new Event(null,planId,eventDescription,today,start,end,false));
+        eventMapper.insert(new Event(null,planId,eventDescription,today,startTime,endTime,false));
     }
 
     @Override
-    public boolean changeEvent(int eventId, String eventDescription, String startTime, String endTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalTime start = LocalTime.parse(startTime, formatter);
-        LocalTime end = LocalTime.parse(endTime, formatter);
+    public boolean changeEvent(int eventId, String eventDescription, LocalTime startTime, LocalTime endTime) {
         Event event = getById(eventId);
         if (event != null) {
             event.setDescription(eventDescription);
-            event.setStartTime(start);
-            event.setEndTime(end);
+            event.setStartTime(startTime);
+            event.setEndTime(endTime);
             updateById(event);
             return true;
         } else {
@@ -56,7 +50,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     }
 
     @Override
-    public boolean deleteEvent(int eventId) {
+    public boolean deleteEvent(Integer eventId) {
         Event event = getById(eventId);
         if (event != null) {
             removeById(eventId);
@@ -78,42 +72,27 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         }
     }
 
-    @Override
-    public List<Event> dailyPlanType(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate date1 = LocalDate.parse(date, formatter);
-        QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("executionDate",date1);
-        List<Event> events=eventMapper.selectList(queryWrapper);
-        return events;
-    }
 
     @Override
-    public List<Event> eventInPlan(String date, int planId) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate date1 = LocalDate.parse(date, formatter);
+    public List<Event> eventInPlan(LocalDate date, int planId) {
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
-        queryWrapper.allEq(Map.of( "planId", planId, "executionDate",date1));
+        queryWrapper.allEq(Map.of( "planId", planId, "executionDate",date));
         List<Event>events=eventMapper.selectList(queryWrapper);
         return events;
     }
 
     @Override
-    public List<Event> dailyEvent(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate date1 = LocalDate.parse(date, formatter);
+    public List<Event> dailyEvent(LocalDate date) {
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("executionDate",date1);
+        queryWrapper.eq("executionDate",date);
         List<Event> events=eventMapper.selectList(queryWrapper);
         return events;
     }
 
     @Override
-    public List<Integer> findPlanIdByDate(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate date1 = LocalDate.parse(date, formatter);
+    public List<Integer> findPlanIdByDate(LocalDate date) {
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("executionDate", date1);
+        queryWrapper.eq("executionDate", date);
         List<Event> events = eventMapper.selectList(queryWrapper);
         return events.stream()
                 .map(Event::getPlanId)

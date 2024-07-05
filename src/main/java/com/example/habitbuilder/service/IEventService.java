@@ -2,6 +2,9 @@ package com.example.habitbuilder.service;
 
 import com.example.habitbuilder.pojo.Event;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -14,19 +17,17 @@ import java.util.List;
  */
 public interface IEventService extends IService<Event> {
 
-   void createEvent(int planId,String eventDescription, String startTime, String endTime);
+   void createEvent(int planId, String eventDescription, LocalTime startTime, LocalTime endTime);
 
-   boolean changeEvent(int eventId, String eventDescription, String startTime, String endTime);
+   boolean changeEvent(int eventId, String eventDescription, LocalTime startTime, LocalTime endTime);
 
-   boolean deleteEvent(int eventId);
+   boolean deleteEvent(Integer eventId);
 
    boolean completeEvent(int eventId);
 
-   List<Event> dailyPlanType(String date);
+   List<Event> eventInPlan(LocalDate date, int planId);
 
-   List<Event> eventInPlan(String date, int planId);
+   List<Event> dailyEvent(LocalDate date);
 
-   List<Event> dailyEvent(String date);
-
-   List<Integer> findPlanIdByDate(String date);
+   List<Integer> findPlanIdByDate(LocalDate date);
 }
