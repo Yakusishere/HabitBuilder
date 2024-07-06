@@ -14,12 +14,12 @@ public class Result<T> {
 
     //操作成功带数据
     public static <E> Result<E> success(E data,String message){
-        return new Result<>(0,"操作成功",data);
+        return new Result<>(0,message,data);
     }
 
     //操作成功不带数据
     public static Result success(String message){
-        return new Result(0,"操作成功",null);
+        return new Result(0,message,null);
     }
 
     //操作失败

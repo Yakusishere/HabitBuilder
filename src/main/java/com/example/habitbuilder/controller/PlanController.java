@@ -1,13 +1,17 @@
 package com.example.habitbuilder.controller;
 
 import com.example.habitbuilder.pojo.Event;
+import com.example.habitbuilder.pojo.Plan;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.service.IEventService;
 import com.example.habitbuilder.service.IPlanService;
+import com.example.habitbuilder.service.IUserService;
+import com.example.habitbuilder.serviceImpl.PlanServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -23,9 +27,13 @@ import java.util.List;
 @RequestMapping("/plan")
 public class PlanController {
     @Autowired
+    private PlanServiceImpl planServiceImpl;
+    @Autowired
     private IEventService iEventService;
     @Autowired
     private IPlanService iPlanService;
+    @Autowired
+    private IUserService iUserService;
     @PostMapping("/createEvent")
     public Result createEvent(@RequestBody Event eventRequest) {
         int planId = eventRequest.getPlanId();
@@ -64,11 +72,16 @@ public class PlanController {
         if(!flag){
             return Result.error("事件不存在");
         }
-        return Result.success("完成成功");
+        else{
+            int planId=iEventService.findPlanIdByEventId(eventId);
+            int userId=iPlanService.findUserIdByPlanId(planId);
+            iUserService.changeScore(userId);
+            return Result.success("完成成功");
+        }
     }
     @GetMapping("/dailyPlanType")
     public Result dailyPlanType(@RequestParam LocalDate date){
-        List<String>plans =iPlanService.dailyPlanType(date);
+        List<Object[]>plans =iPlanService.dailyPlanType(date);
         if(plans.isEmpty()){
             return Result.error("今天没有计划");
         }
@@ -91,5 +104,28 @@ public class PlanController {
             return Result.error("今天没有计划");
         }
         return Result.success(events,"查找成功");
+    }
+    @PostMapping("/addPlan")
+    public Result selectPlan(@RequestBody Plan plan) {
+        plan.setCreateDate(LocalDateTime.now());
+        planServiceImpl.addPlan(plan);
+        return Result.success("计划添加成功");
+    }
+
+    @PostMapping("deletePlan")
+    public Result deletePlan(int planId) {
+        planServiceImpl.deletePlan(planId);
+        return Result.success("计划删除成功");
+    }
+
+    @PostMapping("/updatePlan")
+    public Result updatePlan(@RequestBody Plan plan) {
+        planServiceImpl.updatePlan(plan);
+        return Result.success("计划更新成功");
+    }
+
+    @GetMapping("/myPlan")
+    public Result getMyPlan(int userId) {
+        return Result.success(planServiceImpl.getMyPlan(userId),"获取我的所有计划成功"); //可以加判断返回
     }
 }

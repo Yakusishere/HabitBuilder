@@ -20,5 +20,11 @@ public interface IUserService extends IService<User> {
     //注册
     void register(String username, String password);
 
-    boolean login(String username, String password);
+    User login(String username, String password);
+
+    void changeScore(int userId);
+
+    boolean deleteById(Integer id);
+
+    User getUserId(Integer id);
 }

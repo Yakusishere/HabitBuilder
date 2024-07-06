@@ -1,6 +1,6 @@
 package com.example.habitbuilder.mapper;
 
-import com.example.habitbuilder.pojo.Relation;
+import com.example.habitbuilder.pojo.Likepost;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author 实训小组
- * @since 2024-07-03
+ * @since 2024-07-06
  */
-public interface RelationMapper extends BaseMapper<Relation> {
+public interface LikepostMapper extends BaseMapper<Likepost> {
 
 }

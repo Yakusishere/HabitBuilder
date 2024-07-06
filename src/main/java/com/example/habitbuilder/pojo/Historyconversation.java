@@ -7,9 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -18,24 +16,25 @@ import lombok.Setter;
  * </p>
  *
  * @author 实训小组
- * @since 2024-07-03
+ * @since 2024-07-06
  */
 @Getter
 @Setter
-@TableName("manager")
-@NoArgsConstructor
-@AllArgsConstructor
-@ApiModel(value = "Manager对象", description = "")
-public class Manager implements Serializable {
+@TableName("historyconversation")
+@ApiModel(value = "Historyconversation对象", description = "")
+public class Historyconversation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "managerId", type = IdType.AUTO)
-    private Integer managerId;
+    @TableId(value = "historyConversationId", type = IdType.AUTO)
+    private Integer historyConversationId;
 
-    @TableField("managerName")
-    private String managerName;
+    @TableField("conversationId")
+    private Integer conversationId;
 
-    @TableField("password")
-    private String password;
+    @TableField("content")
+    private String content;
+
+    @TableField("isUser")
+    private Boolean isUser;
 }

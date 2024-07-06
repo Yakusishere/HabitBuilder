@@ -1,10 +1,20 @@
 package com.example.habitbuilder.serviceImpl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.example.habitbuilder.mapper.PlanMapper;
+import com.example.habitbuilder.mapper.UserMapper;
 import com.example.habitbuilder.pojo.Manager;
 import com.example.habitbuilder.mapper.ManagerMapper;
+import com.example.habitbuilder.pojo.Plan;
+import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IManagerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,5 +26,64 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ManagerServiceImpl extends ServiceImpl<ManagerMapper, Manager> implements IManagerService {
+    @Autowired
+    private ManagerMapper managerMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private PlanMapper planMapper;
+
+    // 管理员注册
+    @Override
+    public void managerRegister(Manager manager){
+        managerMapper.insert(manager);
+    }
+
+    //根据管理员名查询管理员信息
+    @Override
+    public Manager getManagerByManagerName(String managerName){
+
+        QueryWrapper<Manager> wrapper = new QueryWrapper<Manager>();
+        wrapper.eq("managerName",managerName);
+        List<Manager> managers = managerMapper.selectList(wrapper);
+        if(managers.isEmpty()){
+            return null;
+        }else{
+            return managers.getFirst();
+        }
+    }
+
+    //获取管理员列表
+    @Override
+    public List<Manager> getManagerList(){
+        return managerMapper.selectList(null);
+    }
+
+    //获取用户列表
+    @Override
+    public List<User> getUserList(){
+
+        return userMapper.selectList(null);
+    }
+
+    //上新计划
+    @Override
+    public void addPlan(Plan plan){
+        planMapper.insert(plan);
+    }
+
+    //下架计划
+    @Override
+    public void deletePlan(int planId){
+        planMapper.deleteById(planId);
+    }
+
+    //更新计划
+    @Override
+    public void updatePlan(Plan plan){
+        UpdateWrapper<Plan> oldPlan = Wrappers.update();
+        oldPlan.eq("planId",plan.getPlanId());
+        planMapper.update(plan,oldPlan);
+    }
 
 }
