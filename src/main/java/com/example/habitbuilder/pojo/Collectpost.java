@@ -16,31 +16,28 @@ import lombok.Setter;
  * </p>
  *
  * @author 实训小组
- * @since 2024-07-03
+ * @since 2024-07-06
  */
 @Getter
 @Setter
-@TableName("relation")
-@ApiModel(value = "Relation对象", description = "")
-public class Relation implements Serializable {
+@TableName("collectpost")
+@ApiModel(value = "Collectpost对象", description = "")
+public class Collectpost implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "relationId", type = IdType.AUTO)
-    private Integer relationId;
+    @TableId(value = "collectPostId", type = IdType.AUTO)
+    private Integer collectPostId;
 
-    @TableField("id_1")
-    private Integer id1;
+    @TableField("userId")
+    private Integer userId;
 
-    @TableField("id_2")
-    private Integer id2;
+    @TableField("postId")
+    private Integer postId;
 
     @TableField("ImageStr")
     private String imageStr;
 
     @TableField("isRead")
     private Boolean isRead;
-
-    @TableField("relationType")
-    private String relationType;
 }

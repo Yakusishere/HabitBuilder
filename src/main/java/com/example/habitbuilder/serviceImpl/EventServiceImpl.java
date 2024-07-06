@@ -5,6 +5,7 @@ import com.example.habitbuilder.mapper.PlanMapper;
 import com.example.habitbuilder.pojo.Event;
 import com.example.habitbuilder.mapper.EventMapper;
 import com.example.habitbuilder.pojo.Plan;
+import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IEventService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,6 +88,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("executionDate",date);
         List<Event> events=eventMapper.selectList(queryWrapper);
+        events.sort(Comparator.comparing(Event::getStartTime));
         return events;
     }
 
@@ -98,5 +101,11 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
                 .map(Event::getPlanId)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public int findPlanIdByEventId(int eventId) {
+        Event event=getById(eventId);
+        return event.getPlanId();
     }
 }

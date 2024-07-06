@@ -44,13 +44,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public boolean login(String username, String password) {
+    public User login(String username, String password) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.allEq(Map.of( "userName", username, "password", password));
-        List<User>users=userMapper.selectList(queryWrapper);
-        if(users.isEmpty()){
-            return false;
-        }
+        queryWrapper.eq("userName", username).eq("password", password);
+        User user = userMapper.selectOne(queryWrapper);
+        return user;
+    }
+
+    @Override
+    public void changeScore(int userId) {
+        User user=getById(userId);
+        int score=user.getMyScore()+5;
+        user.setMyScore(score);
+        updateById(user);
+    }
+
+    @Override
+    public boolean deleteById(Integer id) {
+        userMapper.deleteById(id);
         return true;
+    }
+
+    @Override
+    public User getUserId(Integer id) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId",id);
+        return userMapper.selectOne(queryWrapper);
     }
 }

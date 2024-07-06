@@ -3,6 +3,8 @@ package com.example.habitbuilder.service;
 import com.example.habitbuilder.pojo.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -13,4 +15,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ICommentService extends IService<Comment> {
 
+    void addComment(Comment comment);
+
+    void addReplyComment(Comment comment);
+
+    List<Comment> getThisPostComments(int postId);
+
+    void deleteComment(int commentId);
 }

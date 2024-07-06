@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,16 +28,47 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
     @Autowired
     private PlanMapper planMapper;
     @Override
-    public List<String> dailyPlanType(LocalDate date) {
-        List<Integer> planIds=eventService.findPlanIdByDate(date);
-        if(planIds.isEmpty()){
+    public List<Object[]> dailyPlanType(LocalDate date) {
+        List<Integer> planIds = eventService.findPlanIdByDate(date);
+        if (planIds.isEmpty()) {
             return List.of();
         }
+
         QueryWrapper<Plan> planQueryWrapper = new QueryWrapper<>();
         planQueryWrapper.in("planId", planIds);
         List<Plan> plans = planMapper.selectList(planQueryWrapper);
-        return plans.stream()
-                .map(Plan::getTitle)
-                .collect(Collectors.toList());
+
+        List<Object[]> result = new ArrayList<>();
+        for (Plan plan : plans) {
+            result.add(new Object[]{plan.getPlanId(), plan.getTitle()});
+        }
+
+        return result;
+    }
+    public Integer findUserIdByPlanId(int planId){
+        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("userId").eq("planId", planId);
+        Plan plan = planMapper.selectOne(queryWrapper);
+        return plan != null ? plan.getUserId() : null;
+    }
+    public void addPlan(Plan plan) {
+        planMapper.insert(plan);
+    }
+
+    public void deletePlan(int planId) {
+        planMapper.deleteById(planId);
+    }
+
+    public void updatePlan(Plan plan) {
+
+        QueryWrapper<Plan> wrapper = new QueryWrapper<>();
+        wrapper.eq("planId", plan.getPlanId());
+        planMapper.update(plan, wrapper);
+    }
+
+    public List<Plan> getMyPlan(int userId) {
+        QueryWrapper<Plan> wrapper = new QueryWrapper<>();
+        wrapper.eq("userId", userId);
+        return planMapper.selectList(wrapper);
     }
 }

@@ -30,4 +30,6 @@ public interface IEventService extends IService<Event> {
    List<Event> dailyEvent(LocalDate date);
 
    List<Integer> findPlanIdByDate(LocalDate date);
+
+   int findPlanIdByEventId(int eventId);
 }

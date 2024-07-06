@@ -16,5 +16,15 @@ import java.util.List;
  */
 public interface IPlanService extends IService<Plan> {
 
-    List<String> dailyPlanType(LocalDate date);
+    List<Object[]> dailyPlanType(LocalDate date);
+
+    Integer findUserIdByPlanId(int planId);
+
+    void addPlan(Plan plan);
+
+    void deletePlan(int planId);
+
+    void updatePlan(Plan plan);
+
+    List<Plan> getMyPlan(int userId);
 }
