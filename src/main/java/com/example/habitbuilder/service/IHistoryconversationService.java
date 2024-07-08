@@ -1,6 +1,6 @@
 package com.example.habitbuilder.service;
 
-import com.example.habitbuilder.pojo.Historyconversation;
+import com.example.habitbuilder.pojo.HistoryConversation;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author 实训小组
  * @since 2024-07-06
  */
-public interface IHistoryconversationService extends IService<Historyconversation> {
+public interface IHistoryConversationService extends IService<HistoryConversation> {
 
 }

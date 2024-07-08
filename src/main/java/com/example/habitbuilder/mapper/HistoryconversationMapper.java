@@ -1,6 +1,6 @@
 package com.example.habitbuilder.mapper;
 
-import com.example.habitbuilder.pojo.Historyconversation;
+import com.example.habitbuilder.pojo.HistoryConversation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author 实训小组
  * @since 2024-07-06
  */
-public interface HistoryconversationMapper extends BaseMapper<Historyconversation> {
+public interface HistoryConversationMapper extends BaseMapper<HistoryConversation> {
 
 }

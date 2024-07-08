@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,7 +21,7 @@ import lombok.Setter;
 @Setter
 @TableName("historyconversation")
 @ApiModel(value = "Historyconversation对象", description = "")
-public class Historyconversation implements Serializable {
+public class HistoryConversation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

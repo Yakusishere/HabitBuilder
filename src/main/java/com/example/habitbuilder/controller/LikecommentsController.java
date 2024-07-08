@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2024-07-06
  */
 @RestController
-@RequestMapping("/likecomments")
+@RequestMapping("/community")
 public class LikecommentsController {
     @Autowired
     LikecommentsServiceImpl likeCommentsService;
@@ -32,13 +32,13 @@ public class LikecommentsController {
         return Result.success("取消评论点赞成功");
     }
 
-    @PostMapping("/getIfLikeComment")
+    @PostMapping("/getIfLikeComment") //这个感觉不需要
     public Result getIfLikeComment(int userId,int commentId) {
         return Result.success(likeCommentsService.getIfLikeComment(userId,commentId));
     }
 
     @GetMapping("/getLikeComment")
-    public Result getLikeComment(int userId) {
-        return Result.success(likeCommentsService.getLikeComment(userId),"获取点赞列表成功");
+    public Result getLikeComment(int userId,int postId) {
+        return Result.success(likeCommentsService.getLikeComment(userId,postId),"获取点赞列表成功");
     }
 }

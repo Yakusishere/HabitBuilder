@@ -10,6 +10,7 @@ import com.example.habitbuilder.serviceImpl.PlanServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -105,6 +106,14 @@ public class PlanController {
         }
         return Result.success(events,"查找成功");
     }
+
+    @PostMapping("/autoAddPlan")
+    public Result selectAutoPlan(@RequestBody Plan plan) {
+        plan.setCreateDate(LocalDateTime.now());
+        planServiceImpl.autoAddPlan(plan);
+        return Result.success("计划添加成功");
+    }
+
     @PostMapping("/addPlan")
     public Result selectPlan(@RequestBody Plan plan) {
         plan.setCreateDate(LocalDateTime.now());
