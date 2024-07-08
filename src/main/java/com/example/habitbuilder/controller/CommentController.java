@@ -18,7 +18,7 @@ import java.time.LocalDate;
  * @since 2024-07-03
  */
 @RestController
-@RequestMapping("/comment")
+@RequestMapping("/community")
 public class CommentController {
     @Autowired
     CommentServiceImpl commentService;

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2024-07-06
  */
 @RestController
-@RequestMapping("/likepost")
+@RequestMapping("/community")
 public class LikepostController {
     @Autowired
     LikepostServiceImpl likepostService;
@@ -32,14 +32,14 @@ public class LikepostController {
         return Result.success("取消帖子点赞成功");
     }
 
-    @GetMapping("/getLikePosts")
+    @GetMapping("/getLikePosts") //调用展示时，直接找这个数据进行判断就行了
     public Result getLikePosts(int userId) {
 
         return Result.success(likepostService.getLikePosts(userId),"获取喜欢列表成功");
 
     }
 
-    @PostMapping("/getIfLikePost")
+    @PostMapping("/getIfLikePost") //感觉这个不需要
     public Result getIfLikePost(int userId,int postId) {
 
         return Result.success(likepostService.getIfLikePost(userId,postId));

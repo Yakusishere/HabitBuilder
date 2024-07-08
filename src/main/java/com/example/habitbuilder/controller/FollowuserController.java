@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2024-07-06
  */
 @RestController
-@RequestMapping("/followuser")
+@RequestMapping("/community")
 public class FollowuserController {
     @Autowired
     private FollowuserServiceImpl followUserService;
@@ -35,8 +35,8 @@ public class FollowuserController {
     }
 
     @GetMapping("/getFollowUsers")
-    public Result getFollowUsers(int receiveUserId) {
-        return Result.success(followUserService.getFollowUsers(receiveUserId),"获取关注列表成功");
+    public Result getFollowUsers(int sendUserId) {
+        return Result.success(followUserService.getFollowUsers(sendUserId),"获取关注列表成功");
     }
 
     @PostMapping("/getIfFollow") // 查看是否关注 sendUserId 是否关注 receiveUserId
