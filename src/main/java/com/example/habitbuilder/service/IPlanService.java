@@ -20,15 +20,13 @@ public interface IPlanService extends IService<Plan> {
 
     Integer findUserIdByPlanId(int planId);
 
-    void autoAddPlan(Plan plan);
-
     void addPlan(Plan plan);
 
     void deletePlan(int planId);
 
     void updatePlan(Plan plan);
 
+    void autoAddPlan(Plan plan);
+
     List<Plan> getMyPlan(int userId);
-
-
 }
