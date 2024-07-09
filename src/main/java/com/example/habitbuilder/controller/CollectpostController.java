@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2024-07-06
  */
 @RestController
-@RequestMapping("/community")
+@RequestMapping("/collectpost")
 public class CollectpostController {
     @Autowired
     CollectpostServiceImpl collectpostService;

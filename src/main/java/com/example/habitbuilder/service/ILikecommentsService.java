@@ -20,5 +20,5 @@ public interface ILikecommentsService extends IService<Likecomments> {
 
     String getIfLikeComment(int userId, int commentId);
 
-    List<Likecomments> getLikeComment(int userId,int postId);
+    List<Likecomments> getLikeComment(int userId);
 }

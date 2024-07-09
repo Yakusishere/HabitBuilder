@@ -38,4 +38,10 @@ public class Conversation implements Serializable {
 
     @TableField("createTime")
     private LocalDateTime createTime;
+
+    @TableField("historyConversationId")
+    private Integer historyConversationId;
+
+    @TableField("isAnswer")
+    private boolean isAnswer;
 }

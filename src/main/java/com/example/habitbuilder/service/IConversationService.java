@@ -3,6 +3,8 @@ package com.example.habitbuilder.service;
 import com.example.habitbuilder.pojo.Conversation;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IConversationService extends IService<Conversation> {
 
+    List<Conversation> findConversationsByHistory(int historyConversationId);
 }

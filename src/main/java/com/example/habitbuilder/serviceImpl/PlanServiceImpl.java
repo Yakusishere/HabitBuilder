@@ -4,6 +4,7 @@ import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.InputRequiredException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.habitbuilder.Qwen2;
 import com.example.habitbuilder.pojo.Event;
 import com.example.habitbuilder.pojo.Plan;
 import com.example.habitbuilder.mapper.PlanMapper;
@@ -12,13 +13,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.habitbuilder.Qwen2;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,32 +58,6 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
         Plan plan = planMapper.selectOne(queryWrapper);
         return plan != null ? plan.getUserId() : null;
     }
-
-    @Override
-    public void autoAddPlan(Plan plan) {
-        planMapper.insert(plan); //先生成一个计划
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedDate = plan.getCreateDate().format(formatter);
-
-        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId", plan.getUserId());
-        queryWrapper.eq("createDate", formattedDate);
-        Plan newPlan = planMapper.selectOne(queryWrapper);
-        LocalDate startDate = newPlan.getStartDate();  //从计划开始的日期开始一周
-        try {
-            String[] events = Qwen2.streamCallWithMessage(newPlan.getTitle(),newPlan.getDescription()); // 或者这个计划的所有事件
-            for(String event : events){
-                //event的起始时间设置重新考虑
-                Event eventDay = new Event(0,newPlan.getPlanId(),event,startDate.plusDays(1), LocalTime.of(0, 0, 0),LocalTime.of(0, 0, 0),false);
-                eventService.save(eventDay); // 存入数据库 这个方法会先检查数据库是否有这个值，没有则插入，有则更新
-            }
-        } catch (ApiException | NoApiKeyException | InputRequiredException e) {
-            System.out.println(e.getMessage()); //报错处理 gpt输出格式有问题
-        }
-
-    }
-
     public void addPlan(Plan plan) {
         planMapper.insert(plan);
     }
@@ -106,4 +78,24 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
         wrapper.eq("userId", userId);
         return planMapper.selectList(wrapper);
     }
+
+    public void autoAddPlan(Plan plan) {
+        planMapper.insert(plan); //先生成一个计划
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = plan.getCreateDate().format(formatter);
+        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId",plan.getUserId()).eq("createDate", formattedDate);
+        Plan newPlan = planMapper.selectOne(queryWrapper);
+        LocalDate startDate = newPlan.getStartDate();  //从计划开始的日期开始一周
+        try {
+            String[] events = Qwen2.streamCallWithMessage(newPlan.getTitle(),newPlan.getDescription()); // 或者这个计划的所有事件
+            for(String event : events){
+                //event的起始时间设置重新考虑
+                Event eventDay = new Event(0,newPlan.getPlanId(),event,startDate.plusDays(1), LocalTime.of(0, 0, 0),LocalTime.of(0, 0, 0),false);
+                eventService.save(eventDay); // 存入数据库 这个方法会先检查数据库是否有这个值，没有则插入，有则更新
+            }
+        } catch (ApiException | NoApiKeyException | InputRequiredException e) {
+            System.out.println(e.getMessage()); //报错处理 gpt输出格式有问题
+    }
+        }
 }

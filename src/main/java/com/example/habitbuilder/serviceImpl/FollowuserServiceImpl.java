@@ -34,10 +34,10 @@ public class FollowuserServiceImpl extends ServiceImpl<FollowuserMapper, Followu
     }
 
     @Override
-    public List<Followuser> getFollowUsers(int sendUserId)
+    public List<Followuser> getFollowUsers(int receiveUserId)
     {
         QueryWrapper<Followuser> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("sendUserId", sendUserId);
+        queryWrapper.eq("receiveUserId", receiveUserId);
         return followuserMapper.selectList(queryWrapper);
     }
 

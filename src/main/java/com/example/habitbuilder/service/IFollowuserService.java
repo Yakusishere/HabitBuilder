@@ -18,7 +18,7 @@ public interface IFollowuserService extends IService<Followuser> {
 
     void deleteFollowUser(int followUserId);
 
-    List<Followuser> getFollowUsers(int sendUserId);
+    List<Followuser> getFollowUsers(int receiveUserId);
 
     String getIfFollow(int sendUserId ,int receiveUserId);
 }

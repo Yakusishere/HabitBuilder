@@ -46,10 +46,9 @@ public class LikecommentsServiceImpl extends ServiceImpl<LikecommentsMapper, Lik
 
 
 
-    public List<Likecomments> getLikeComment(int userId,int postId){
+    public List<Likecomments> getLikeComment(int userId){
         QueryWrapper<Likecomments> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userId", userId);
-        queryWrapper.eq("postId", postId); // 查到这个用户对这个帖子的所有点赞关系
         return likecommentsMapper.selectList(queryWrapper);
     }
 }

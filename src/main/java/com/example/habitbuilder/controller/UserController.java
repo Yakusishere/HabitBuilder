@@ -59,7 +59,7 @@ public class UserController {
         if(user==null){
             return Result.error("该用户不存在");
         }
-        return Result.success("查询成功");
+        return Result.success(user,"查询成功");
     }
     @PostMapping("/register")
     public Result register(@RequestBody User userRequest){
