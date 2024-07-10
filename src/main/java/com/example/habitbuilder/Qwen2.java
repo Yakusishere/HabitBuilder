@@ -1,11 +1,10 @@
 package com.example.habitbuilder;
 
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import com.alibaba.dashscope.aigc.generation.Generation;
+import com.alibaba.dashscope.aigc.generation.GenerationParam;
 import com.alibaba.dashscope.aigc.generation.GenerationResult;
 import com.alibaba.dashscope.aigc.generation.models.QwenParam;
 import com.alibaba.dashscope.common.Message;
@@ -20,6 +19,24 @@ import org.json.JSONObject;
 
 
 public class Qwen2 {
+    public static String callWithMessage(String question)
+            throws NoApiKeyException, ApiException, InputRequiredException {
+        Generation gen = new Generation();
+        List<Message> messages = new ArrayList<>();
+        Message systemMsg =
+                Message.builder().role(Role.SYSTEM.getValue()).content("You are a helpful assistant.").build();
+        Message userMsg = Message.builder().role(Role.USER.getValue()).content(question).build(); //入口
+        messages.add(systemMsg);
+        messages.add(userMsg);
+        GenerationParam param =
+                QwenParam.builder().model("qwen2-7b-instruct")
+                        .messages(Collections.singletonList(userMsg))
+                        .resultFormat(QwenParam.ResultFormat.MESSAGE)
+                        .build();
+        GenerationResult result = gen.call(param);
+        String answer=result.getOutput().getChoices().get(0).getMessage().getContent();
+        return answer;
+    }
     public static String[] streamCallWithMessage(String planTitle,String request)
             throws NoApiKeyException, ApiException, InputRequiredException {
 

@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,12 +30,12 @@ public class HistoryConversation implements Serializable {
     @TableId(value = "historyConversationId", type = IdType.AUTO)
     private Integer historyConversationId;
 
-    @TableField("conversationId")
-    private Integer conversationId;
+    @TableField("title")
+    private String title;
 
-    @TableField("content")
-    private String content;
+   @TableField("userId")
+    private Integer userId;
 
-    @TableField("isUser")
-    private Boolean isUser;
+   @TableField("createTime")
+    private LocalDateTime createTime;
 }

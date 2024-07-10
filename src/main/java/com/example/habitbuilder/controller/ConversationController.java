@@ -1,6 +1,7 @@
 package com.example.habitbuilder.controller;
 
 import com.example.habitbuilder.pojo.Conversation;
+import com.example.habitbuilder.pojo.HistoryConversation;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.service.IConversationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,19 @@ import java.util.List;
 public class ConversationController {
     @Autowired
     private IConversationService conversationService;
-
+    //AI问答
+    @PostMapping ("/AI")
+    public Result AI(@RequestParam String question,@RequestPart HistoryConversation historyConversation){
+        String answer=conversationService.AI(question);
+        int userId= historyConversation.getUserId();
+        int historyConversationId=historyConversation.getHistoryConversationId();
+        if(answer=="error"){
+            return Result.error("回答失败");
+        }else{
+            conversationService.setConversation(question,answer,userId,historyConversationId);
+            return Result.success(answer,"成功回答");
+        }
+    }
     // 增加对话
     @PostMapping("/addConversation")
     public Result addConversation(@RequestBody Conversation conversation) {
