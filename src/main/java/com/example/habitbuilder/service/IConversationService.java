@@ -16,4 +16,8 @@ import java.util.List;
 public interface IConversationService extends IService<Conversation> {
 
     List<Conversation> findConversationsByHistory(int historyConversationId);
+
+    String AI(String question);
+
+    void setConversation(String question, String answer,int userId,int historyCoversationId);
 }

@@ -1,11 +1,13 @@
 package com.example.habitbuilder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
 import com.alibaba.dashscope.aigc.generation.Generation;
 import com.alibaba.dashscope.aigc.generation.GenerationParam;
 import com.alibaba.dashscope.aigc.generation.GenerationResult;
+import com.alibaba.dashscope.aigc.generation.models.QwenParam;
 import com.alibaba.dashscope.common.Message;
 import com.alibaba.dashscope.common.Role;
 import com.alibaba.dashscope.exception.ApiException;
@@ -22,11 +24,13 @@ public class AITest {
             messages.add(systemMsg);
             messages.add(userMsg);
             GenerationParam param =
-                    GenerationParam.builder().model(Generation.Models.QWEN_TURBO).messages(messages)
-                            .resultFormat(GenerationParam.ResultFormat.MESSAGE)
+                    QwenParam.builder().model("qwen2-7b-instruct")
+                            .messages(Collections.singletonList(userMsg))
+                            .resultFormat(QwenParam.ResultFormat.MESSAGE)
                             .build();
             GenerationResult result = gen.call(param);
-            System.out.println(result.getOutput().getChoices().get(0).getMessage().getContent());
+            String answer=result.getOutput().getChoices().get(0).getMessage().getContent();
+            System.out.println(answer);
         }
 
         public static void main(String[] args){

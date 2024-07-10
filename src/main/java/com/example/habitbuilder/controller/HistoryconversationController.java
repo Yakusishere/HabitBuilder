@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -28,14 +29,14 @@ public class HistoryConversationController {
     @Autowired
     private IConversationService iConversationService;
     @Qualifier("conversionService")
-    @Autowired
-    private ConversionService conversionService;
 
     // 增加历史对话
     @PostMapping("/addHistoryConversation")
     public Result addHistoryConversation(@RequestBody HistoryConversation historyConversation) {
+        historyConversation.setCreateTime(LocalDateTime.now());
         if(historyConversationService.save(historyConversation)) {
-            return Result.success("添加成功");
+            HistoryConversation newHistoryConversation=historyConversationService.getHistoryConversation(historyConversation);
+            return Result.success(newHistoryConversation,"添加成功");
         }else{
             return Result.error("添加失败");
         }
