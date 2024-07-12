@@ -53,4 +53,7 @@ public class Comment implements Serializable {
 
     @TableField("replyCount")
     private Integer replyCount;
+
+//    @TableField("point")
+//    private Integer point;
 }

@@ -15,9 +15,11 @@ public interface ICollectpostService extends IService<Collectpost> {
 
     void addCollection(Collectpost collectpost);
 
-    void deleteCollection(int collectionId);
+    void deleteCollection(int postId,int userId);
 
     String getPostCollections(int userId, int postId);
 
     Object getCollections(int userId);
+
+    boolean isDuplicateCollection(int postId, int userId);
 }

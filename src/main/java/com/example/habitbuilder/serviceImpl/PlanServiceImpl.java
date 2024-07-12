@@ -98,4 +98,10 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
             System.out.println(e.getMessage()); //报错处理 gpt输出格式有问题
     }
         }
+    @Override
+    public List<Plan> searchPlan(String title) {
+        QueryWrapper <Plan> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("title", title);
+        return planMapper.selectList(queryWrapper);
+    }
 }

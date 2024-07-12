@@ -22,13 +22,17 @@ public class CollectpostController {
 
     @PostMapping("/addCollection")
     public Result addCollection( @RequestBody Collectpost collectpost) {
+        boolean isDuplicate = collectpostService.isDuplicateCollection(collectpost.getPostId(), collectpost.getUserId());
+        if (isDuplicate) {
+            return Result.error("重复收藏");
+        }
         collectpostService.addCollection(collectpost);
         return Result.success("收藏成功");
     }
 
     @DeleteMapping("/deleteCollection")
-    public Result deleteCollection(int collectionId) {
-        collectpostService.deleteCollection(collectionId);
+    public Result deleteCollection(int postId,int userId) {
+        collectpostService.deleteCollection(postId,userId);
         return Result.success("取消收藏成功");
     }
     // 是否收藏

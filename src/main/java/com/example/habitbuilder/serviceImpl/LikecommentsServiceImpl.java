@@ -3,6 +3,7 @@ package com.example.habitbuilder.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.habitbuilder.pojo.Likecomments;
 import com.example.habitbuilder.mapper.LikecommentsMapper;
+import com.example.habitbuilder.pojo.Likepost;
 import com.example.habitbuilder.service.ILikecommentsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,10 @@ public class LikecommentsServiceImpl extends ServiceImpl<LikecommentsMapper, Lik
     }
 
     @Override
-    public void deleteLikeComment(int likeCommentId) {
-        likecommentsMapper.deleteById(likeCommentId);
+    public void deleteLikeComment(int commentId,int userId) {
+        QueryWrapper<Likecomments> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("commentId", commentId).eq("userId", userId);
+        likecommentsMapper.delete(queryWrapper);
     }
 
     public String getIfLikeComment(int userId, int commentId) {
@@ -50,5 +53,13 @@ public class LikecommentsServiceImpl extends ServiceImpl<LikecommentsMapper, Lik
         QueryWrapper<Likecomments> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userId", userId);
         return likecommentsMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public boolean isDuplicateLikeComment(int commentId, int userId) {
+        QueryWrapper<Likecomments> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("commentId", commentId).eq("userId", userId);
+        Likecomments existingLikecomment = likecommentsMapper.selectOne(queryWrapper);
+        return existingLikecomment != null;
     }
 }

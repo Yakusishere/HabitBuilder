@@ -29,8 +29,10 @@ public class LikepostServiceImpl extends ServiceImpl<LikepostMapper, Likepost> i
     }
 
     @Override
-    public void deleteLikePost(int likePostId) {
-        likepostMapper.deleteById(likePostId);
+    public void deleteLikePost(int postId,int userId) {
+        QueryWrapper<Likepost> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("postId", postId).eq("userId", userId);
+        likepostMapper.delete(queryWrapper);
     }
 
     @Override
@@ -52,5 +54,13 @@ public class LikepostServiceImpl extends ServiceImpl<LikepostMapper, Likepost> i
         else{
             return "true";
         }
+    }
+
+    @Override
+    public boolean isDuplicateLikePost(int userId, int postId) {
+        QueryWrapper<Likepost> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("postId", postId).eq("userId", userId);
+        Likepost existingLikepost = likepostMapper.selectOne(queryWrapper);
+        return existingLikepost != null;
     }
 }

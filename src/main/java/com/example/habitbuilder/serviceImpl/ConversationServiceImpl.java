@@ -51,4 +51,11 @@ public class ConversationServiceImpl extends ServiceImpl<ConversationMapper, Con
     public void setConversation(String question, String answer,int userId,int historyConversationId) {
         conversationMapper.insert(new Conversation(null,userId,question,answer, LocalDateTime.now(),historyConversationId));
     }
+
+    @Override
+    public List<Conversation> getByHistoryConversation(int historyConversationId) {
+        QueryWrapper<Conversation> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("historyConversationId", historyConversationId);
+        return conversationMapper.selectList(queryWrapper);
+    }
 }

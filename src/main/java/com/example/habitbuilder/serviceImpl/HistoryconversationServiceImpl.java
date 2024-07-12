@@ -35,4 +35,11 @@ public class HistoryConversationServiceImpl extends ServiceImpl<HistoryConversat
         HistoryConversation newHistoryConversation = historyConversationMapper.selectOne(queryWrapper);
         return newHistoryConversation;
     }
+
+    @Override
+    public List<HistoryConversation> getByUserId(int userId) {
+        QueryWrapper<HistoryConversation> QueryWrapper = new QueryWrapper<>();
+        QueryWrapper.eq("userId",userId);
+        return historyConversationMapper.selectList(QueryWrapper);
+    }
 }

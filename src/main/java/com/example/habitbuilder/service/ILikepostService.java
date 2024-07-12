@@ -16,9 +16,11 @@ import java.util.List;
 public interface ILikepostService extends IService<Likepost> {
     void addLikePost(Likepost likepost);
 
-    void deleteLikePost(int likePostId);
+    void deleteLikePost(int postId,int userId);
 
     List<Likepost> getLikePosts(int userId);
 
     String getIfLikePost(int userId, int postId);
+
+    boolean isDuplicateLikePost(int postId, int userId);
 }
