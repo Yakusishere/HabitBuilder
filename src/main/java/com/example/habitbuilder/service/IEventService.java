@@ -27,7 +27,7 @@ public interface IEventService extends IService<Event> {
 
    List<Event> eventInPlan(LocalDate date, int planId);
 
-   List<Event> dailyEvent(LocalDate date);
+   List<Event> dailyEvent(int userId,LocalDate date);
 
    List<Integer> findPlanIdByDate(LocalDate date);
 

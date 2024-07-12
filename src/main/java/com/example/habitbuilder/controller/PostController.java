@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * <p>
@@ -46,4 +47,23 @@ public class PostController {
         return Result.success(postService.getAllPost(),"获取所有帖子成功");
     }
 
+    @GetMapping("/searchPost")
+    public Result searchPost(String title){
+        List<Post>posts=postService.searchPost(title);
+        if(posts.isEmpty()){
+            return Result.error("搜索无结果");
+        }else {
+            return Result.success(posts,"搜索成功");
+        }
+    }
+
+    @GetMapping("/getPostByUserId")
+    public Result getPostByUserId(int userId){
+        List<Post>posts=postService.getPostByUserId(userId);
+        if(posts.isEmpty()){
+            return Result.error("该用户未发布帖子");
+        }else{
+            return Result.success(posts,"查找成功");
+        }
+    }
 }

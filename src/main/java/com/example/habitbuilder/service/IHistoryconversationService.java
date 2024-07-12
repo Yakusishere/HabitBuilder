@@ -18,6 +18,5 @@ public interface IHistoryConversationService extends IService<HistoryConversatio
 
     HistoryConversation getHistoryConversation(HistoryConversation historyConversation);
 
-
     List<HistoryConversation> getByUserId(int userId);
 }

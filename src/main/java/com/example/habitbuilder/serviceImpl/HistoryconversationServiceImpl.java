@@ -28,10 +28,9 @@ public class HistoryConversationServiceImpl extends ServiceImpl<HistoryConversat
 
     @Override
     public HistoryConversation getHistoryConversation(HistoryConversation historyConversation) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedDate = historyConversation.getCreateTime().format(formatter);
+        int historyConversationId=historyConversation.getHistoryConversationId();
         QueryWrapper<HistoryConversation> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId",historyConversation.getUserId()).eq("createTime", formattedDate);
+        queryWrapper.eq("historyConversationId",historyConversationId);
         HistoryConversation newHistoryConversation = historyConversationMapper.selectOne(queryWrapper);
         return newHistoryConversation;
     }

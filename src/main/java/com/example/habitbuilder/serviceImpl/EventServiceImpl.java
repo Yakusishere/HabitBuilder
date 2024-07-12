@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements IEventService {
     @Autowired
     private EventMapper eventMapper;
+    @Autowired
+    private PlanMapper planMapper;
     @Override
     public void createEvent(int planId,String eventDescription, LocalTime startTime, LocalTime endTime) {
         LocalDate today = LocalDate.now();
@@ -80,13 +82,21 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
         queryWrapper.allEq(Map.of( "planId", planId, "executionDate",date));
         List<Event>events=eventMapper.selectList(queryWrapper);
+        events.sort(Comparator.comparing(Event::getStartTime));
         return events;
     }
 
     @Override
-    public List<Event> dailyEvent(LocalDate date) {
+    public List<Event> dailyEvent(int userId,LocalDate date) {
+        QueryWrapper<Plan> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("userId",userId);
+        List<Plan> plans=planMapper.selectList(queryWrapper1);
+        List<Integer> planIds=plans.stream()
+                .map(Plan::getPlanId)
+                .distinct()
+                .collect(Collectors.toList());
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("executionDate",date);
+        queryWrapper.in("planId",planIds).eq("executionDate",date);
         List<Event> events=eventMapper.selectList(queryWrapper);
         events.sort(Comparator.comparing(Event::getStartTime));
         return events;

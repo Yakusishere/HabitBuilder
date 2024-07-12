@@ -79,14 +79,16 @@ public class PlanController {
             return Result.success("完成成功");
         }
     }
+    //获取当天用户要做的所有事件
     @GetMapping("/dailyPlanType")
-    public Result dailyPlanType(@RequestParam LocalDate date){
-        List<Object[]>plans =iPlanService.dailyPlanType(date);
+    public Result dailyPlanType(int userId, LocalDate date){
+        List<Object[]>plans =iPlanService.dailyPlanType(userId,date);
         if(plans.isEmpty()){
             return Result.error("今天没有计划");
         }
         return Result.success(plans,"查找成功");
     }
+    //获取当天对应计划的事件
     @PostMapping("/eventInPlan")
     public Result eventInPlan(@RequestBody Event eventRequest){
         int planId = eventRequest.getPlanId();
@@ -98,8 +100,8 @@ public class PlanController {
         return Result.success(events,"查找成功");
     }
     @GetMapping("/dailyEvent")
-    public Result dailyEvent(@RequestParam LocalDate date){
-        List<Event>events =iEventService.dailyEvent(date);
+    public Result dailyEvent(int userId,LocalDate date){
+        List<Event>events =iEventService.dailyEvent(userId,date);
         if(events.isEmpty()){
             return Result.error("今天没有计划");
         }
@@ -113,7 +115,8 @@ public class PlanController {
     }
     @PostMapping("/autoAddPlan")
     public Result selectAutoPlan(@RequestBody Plan plan) {
-        plan.setCreateDate(LocalDateTime.now());
+
+        plan.setCreateDate(LocalDateTime.now().withNano(0));
         planServiceImpl.autoAddPlan(plan);
         return Result.success("计划添加成功");
     }
@@ -133,6 +136,16 @@ public class PlanController {
     @GetMapping("/myPlan")
     public Result getMyPlan(int userId) {
         return Result.success(planServiceImpl.getMyPlan(userId),"获取我的所有计划成功"); //可以加判断返回
+    }
+
+    @GetMapping("/lowerScore")
+    public Result lowerScore(int userId,LocalDate date){
+        int score=planServiceImpl.lowerScore(userId,date);
+        if(score==-1){
+            return Result.error("今天的任务都完成啦");
+        }else {
+            return Result.success(score,"扣分成功");
+        }
     }
 
     @GetMapping("/searchPlan")

@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -37,21 +39,28 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }else{
             comment.setCommentCount(1);// 如果为空设置为1
         }
-
-        commentMapper.insert(comment);
-
-    }
-
-    @Override
-    public void addReplyComment(Comment comment) {//回复的commentCount 和 评论的commentCount相同
         commentMapper.insert(comment);
     }
 
     @Override
-    public List<Comment> getThisPostComments(int postId) {
+    public void addReplyComment(Comment comment) {
+        //回复的commentCount 和 评论的commentCount相同
+        commentMapper.insert(comment);
+    }
+
+    @Override
+    public List<Comment[]> getThisPostComments(int postId) {
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
         wrapper.eq("postId", postId);
-        return commentMapper.selectList(wrapper);
+        List<Comment>comments = commentMapper.selectList(wrapper);
+        // 按 commentCount 分组
+        Map<Integer, List<Comment>> groupedComments = comments.stream()
+                .collect(Collectors.groupingBy(Comment::getCommentCount));
+        // 将每一组转换为二维数组的一行
+        List<Comment[]> result = groupedComments.values().stream()
+                .map(group -> group.toArray(new Comment[0]))
+                .collect(Collectors.toList());
+        return result;
     }
 
     @Override

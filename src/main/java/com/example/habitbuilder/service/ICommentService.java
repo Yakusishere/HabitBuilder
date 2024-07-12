@@ -19,7 +19,7 @@ public interface ICommentService extends IService<Comment> {
 
     void addReplyComment(Comment comment);
 
-    List<Comment> getThisPostComments(int postId);
+    List<Comment[]> getThisPostComments(int postId);
 
     void deleteComment(int commentId);
 }
