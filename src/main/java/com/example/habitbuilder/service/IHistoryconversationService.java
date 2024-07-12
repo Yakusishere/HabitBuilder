@@ -17,4 +17,7 @@ import java.util.List;
 public interface IHistoryConversationService extends IService<HistoryConversation> {
 
     HistoryConversation getHistoryConversation(HistoryConversation historyConversation);
+
+
+    List<HistoryConversation> getByUserId(int userId);
 }

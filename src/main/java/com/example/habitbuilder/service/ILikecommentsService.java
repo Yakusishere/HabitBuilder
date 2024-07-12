@@ -16,9 +16,11 @@ import java.util.List;
 public interface ILikecommentsService extends IService<Likecomments> {
     void addLikeComment(Likecomments likecomments);
 
-    void deleteLikeComment(int likeCommentId);
+    void deleteLikeComment(int commentId,int userId);
 
     String getIfLikeComment(int userId, int commentId);
 
     List<Likecomments> getLikeComment(int userId);
+
+    boolean isDuplicateLikeComment(int commentId, int userId);
 }

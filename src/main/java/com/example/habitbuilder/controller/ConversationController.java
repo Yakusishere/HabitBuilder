@@ -80,9 +80,9 @@ public class ConversationController {
     }
 
     // 根据 ID 查询对话
-    @GetMapping("/getConversationById")
-    public Result getConversationById(Integer id) {
-        Conversation conversation = conversationService.getById(id);
+    @GetMapping("/getConversationByHistoryConversationId")
+    public Result getConversationByHistoryConversationId(int historyConversationId) {
+        List<Conversation> conversation = conversationService.getByHistoryConversation(historyConversationId);
         if(conversation==null){
             return Result.error("该对话不存在");
         }else{

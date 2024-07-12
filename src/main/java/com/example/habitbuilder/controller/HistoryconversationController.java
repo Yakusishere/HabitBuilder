@@ -74,10 +74,10 @@ public class HistoryConversationController {
     }
 
     // 根据 ID 查询历史对话
-    @GetMapping("/getHistoryConversationById")
-    public Result getHistoryConversationById(Integer id) {
-        HistoryConversation historyConversation=historyConversationService.getById(id);
-        if(historyConversation==null){
+    @GetMapping("/getHistoryConversationByUserId")
+    public Result getHistoryConversationByUserId(int userId) {
+        List<HistoryConversation> historyConversation=historyConversationService.getByUserId(userId);
+        if(historyConversation.isEmpty()){
             return Result.error("该对话不存在");
         }else{
             return Result.success(historyConversation,"查询成功");

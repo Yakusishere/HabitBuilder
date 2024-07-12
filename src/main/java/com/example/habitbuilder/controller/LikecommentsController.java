@@ -22,13 +22,17 @@ public class LikecommentsController {
 
     @PostMapping("/addLikeComment")
     public Result addLikeComment(@RequestBody Likecomments likecomments) {
+        boolean isDuplicate = likeCommentsService.isDuplicateLikeComment(likecomments.getCommentId(), likecomments.getUserId());
+        if (isDuplicate) {
+            return Result.error("重复点赞");
+        }
         likeCommentsService.addLikeComment(likecomments);
         return Result.success("评论点赞成功");
     }
 
     @DeleteMapping("/deleteLikeComment")
-    public Result deleteLikeComment(int LikeCommentId) {
-        likeCommentsService.deleteLikeComment(LikeCommentId);
+    public Result deleteLikeComment(int commentId,int userId) {
+        likeCommentsService.deleteLikeComment(commentId,userId);
         return Result.success("取消评论点赞成功");
     }
 

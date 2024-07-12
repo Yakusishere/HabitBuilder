@@ -134,4 +134,13 @@ public class PlanController {
     public Result getMyPlan(int userId) {
         return Result.success(planServiceImpl.getMyPlan(userId),"获取我的所有计划成功"); //可以加判断返回
     }
+
+    @GetMapping("/searchPlan")
+    public Result searchPlan(String title) {
+        List<Plan>plans=planServiceImpl.searchPlan(title);
+        if (plans.isEmpty()) {
+            return Result.error("搜索失败");
+        }
+        return Result.success(plans,"搜索成功");
+    }
 }

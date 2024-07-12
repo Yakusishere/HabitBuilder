@@ -22,13 +22,17 @@ public class LikepostController {
 
     @PostMapping("/addLikePost")
     public Result addLikePost(@RequestBody Likepost likepost) {
+        boolean isDuplicate = likepostService.isDuplicateLikePost(likepost.getPostId(), likepost.getUserId());
+        if (isDuplicate) {
+            return Result.error("重复点赞");
+        }
         likepostService.addLikePost(likepost);
         return Result.success("点赞帖子成功");
     }
 
     @DeleteMapping("/deleteLikePost")
-    public Result deleteLikePost(int LikePostId) {
-        likepostService.deleteLikePost(LikePostId);
+    public Result deleteLikePost(int postId,int userId) {
+        likepostService.deleteLikePost(postId,userId);
         return Result.success("取消帖子点赞成功");
     }
 
@@ -42,7 +46,7 @@ public class LikepostController {
     @PostMapping("/getIfLikePost")
     public Result getIfLikePost(int userId,int postId) {
 
-        return Result.success(likepostService.getIfLikePost(userId,postId));
+        return Result.success(likepostService.getIfLikePost(userId,postId),"取消点赞成功");
 
     }
 }

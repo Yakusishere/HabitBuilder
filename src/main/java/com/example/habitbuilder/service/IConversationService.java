@@ -20,4 +20,6 @@ public interface IConversationService extends IService<Conversation> {
     String AI(String question);
 
     void setConversation(String question, String answer,int userId,int historyCoversationId);
+
+    List<Conversation> getByHistoryConversation(int historyConversationId);
 }

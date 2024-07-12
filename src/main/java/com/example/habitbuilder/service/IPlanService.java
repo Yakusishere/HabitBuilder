@@ -29,4 +29,6 @@ public interface IPlanService extends IService<Plan> {
     void autoAddPlan(Plan plan);
 
     List<Plan> getMyPlan(int userId);
+
+    List<Plan> searchPlan(String title);
 }

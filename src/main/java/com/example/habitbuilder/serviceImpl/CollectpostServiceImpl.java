@@ -3,6 +3,7 @@ package com.example.habitbuilder.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.habitbuilder.pojo.Collectpost;
 import com.example.habitbuilder.mapper.CollectpostMapper;
+import com.example.habitbuilder.pojo.Likepost;
 import com.example.habitbuilder.service.ICollectpostService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,10 @@ public class CollectpostServiceImpl extends ServiceImpl<CollectpostMapper, Colle
     }
 
     @Override
-    public void deleteCollection(int collectionId) {
-        collectpostMapper.deleteById(collectionId);
+    public void deleteCollection(int postId,int userId) {
+        QueryWrapper<Collectpost> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("postId", postId).eq("userId", userId);
+        collectpostMapper.delete(queryWrapper);
     }
 
     @Override
@@ -51,5 +54,13 @@ public class CollectpostServiceImpl extends ServiceImpl<CollectpostMapper, Colle
         else {
             return "false";
         }
+    }
+
+    @Override
+    public boolean isDuplicateCollection(int userId, int postId) {
+        QueryWrapper<Collectpost> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("postId", postId).eq("userId", userId);
+        Collectpost existingCollection = collectpostMapper.selectOne(queryWrapper);
+        return existingCollection != null;
     }
 }
