@@ -53,4 +53,7 @@ public class Post implements Serializable {
 
     @TableField("CommentCount")
     private Integer commentCount;
+
+    @TableField("image")
+    private String image;
 }

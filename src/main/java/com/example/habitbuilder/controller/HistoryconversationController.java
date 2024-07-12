@@ -22,7 +22,7 @@ import java.util.List;
  * @since 2024-07-06
  */
 @RestController
-@RequestMapping("/historyconversation")
+@RequestMapping("/historyConversation")
 public class HistoryConversationController {
     @Autowired
     private IHistoryConversationService historyConversationService;

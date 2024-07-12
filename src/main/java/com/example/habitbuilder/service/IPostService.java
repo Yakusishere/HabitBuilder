@@ -22,4 +22,8 @@ public interface IPostService extends IService<Post> {
     void updatePost(Post post);
 
     List<Post> getAllPost();
+
+    List<Post> searchPost(String title);
+
+    List<Post> getPostByUserId(int userId);
 }

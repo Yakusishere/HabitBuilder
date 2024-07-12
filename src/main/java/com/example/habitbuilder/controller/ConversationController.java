@@ -83,7 +83,7 @@ public class ConversationController {
     @GetMapping("/getConversationByHistoryConversationId")
     public Result getConversationByHistoryConversationId(int historyConversationId) {
         List<Conversation> conversation = conversationService.getByHistoryConversation(historyConversationId);
-        if(conversation==null){
+        if(conversation.isEmpty()){
             return Result.error("该对话不存在");
         }else{
             return Result.success(conversation,"查询成功");

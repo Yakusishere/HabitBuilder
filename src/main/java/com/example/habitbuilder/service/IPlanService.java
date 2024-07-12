@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface IPlanService extends IService<Plan> {
 
-    List<Object[]> dailyPlanType(LocalDate date);
+    List<Object[]> dailyPlanType(int userId,LocalDate date);
 
     Integer findUserIdByPlanId(int planId);
 
@@ -29,6 +29,8 @@ public interface IPlanService extends IService<Plan> {
     void autoAddPlan(Plan plan);
 
     List<Plan> getMyPlan(int userId);
+
+    int lowerScore(int userId,LocalDate date);
 
     List<Plan> searchPlan(String title);
 }

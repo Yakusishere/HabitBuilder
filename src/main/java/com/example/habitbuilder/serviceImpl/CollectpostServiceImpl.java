@@ -3,7 +3,6 @@ package com.example.habitbuilder.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.habitbuilder.pojo.Collectpost;
 import com.example.habitbuilder.mapper.CollectpostMapper;
-import com.example.habitbuilder.pojo.Likepost;
 import com.example.habitbuilder.service.ICollectpostService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

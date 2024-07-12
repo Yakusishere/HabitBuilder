@@ -75,4 +75,18 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         posts.sort((t1,t2)->t2.getPostId().compareTo(t1.getPostId())); //按序号排序 最新的在前面
         return posts;
     }
+
+    @Override
+    public List<Post> searchPost(String title) {
+        QueryWrapper <Post> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("title", title);
+        return postMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<Post> getPostByUserId(int userId) {
+        QueryWrapper <Post> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("userId", userId);
+        return postMapper.selectList(queryWrapper);
+    }
 }
