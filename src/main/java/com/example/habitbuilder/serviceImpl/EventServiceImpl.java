@@ -118,4 +118,14 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         Event event=getById(eventId);
         return event.getPlanId();
     }
+
+    @Override
+    public List<Event> getPlanEvents(int planId) {
+        return eventMapper.selectList(new QueryWrapper<Event>().eq("planId", planId));
+    }
+
+    @Override
+    public void addEvent(Event event){
+        eventMapper.insert(event);
+    }
 }

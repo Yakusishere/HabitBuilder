@@ -148,6 +148,11 @@ public class PlanController {
         }
     }
 
+    @GetMapping("/getPlanList")
+    public Result getPlanList() {
+        return Result.success(planServiceImpl.getPlanList(),"成功获取所有模板计划");
+    }
+
     @GetMapping("/searchPlan")
     public Result searchPlan(String title) {
         List<Plan>plans=planServiceImpl.searchPlan(title);

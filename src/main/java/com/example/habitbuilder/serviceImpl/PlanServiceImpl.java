@@ -126,6 +126,7 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
         return planMapper.selectList(queryWrapper);
     }
 
+    @Override
     public void autoAddPlan(Plan plan) {
         plan.setStartDate(LocalDate.from(plan.getCreateDate().plusDays(1)));
         plan.setEndDate(LocalDate.from(plan.getCreateDate().plusDays(7)));
@@ -146,4 +147,9 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
             System.out.println(e.getMessage()); //报错处理 gpt输出格式有问题
     }
         }
+
+    @Override
+    public List<Plan> getPlanList(){
+        return planMapper.selectList(null);
+    }// 所有计划
 }

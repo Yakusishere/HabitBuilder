@@ -66,8 +66,5 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Override
     public void deleteComment(int commentId) {
         commentMapper.deleteById(commentId);
-        QueryWrapper<Likecomments> wrapper = new QueryWrapper<>();
-        wrapper.eq("commentId", commentId);
-        likecommentsMapper.delete(wrapper);
     }
 }
