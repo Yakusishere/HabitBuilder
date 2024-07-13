@@ -13,4 +13,7 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class AliOSSUtils {
 
+    public String upload(MultipartFile image) {
+        return "ljl";
+    }
 }

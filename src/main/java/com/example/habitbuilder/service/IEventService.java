@@ -36,4 +36,6 @@ public interface IEventService extends IService<Event> {
     List<Event> getPlanEvents(int planId);
 
    void addEvent(Event event);
+
+
 }
