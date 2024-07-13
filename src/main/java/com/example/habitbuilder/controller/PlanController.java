@@ -162,13 +162,19 @@ public class PlanController {
         return Result.success(plans,"搜索成功");
     }
 
-//    @GetMapping("/eventByPlanId")
-//    public Result eventByPlanId(int planId) {
-//        List<Event> events = iEventService.getEventsByPlanId(planId);
-//        if (events.isEmpty()) {
-//            return Result.error("搜索失败");
-//        }else {
-//            return Result.success(events,"搜索成功");
-//        }
-//    }
+    @PostMapping("/fixPlan")
+    public Result fixPlan( @RequestPart Plan plan,@RequestParam String request){
+        String[]planContent=iPlanService.fixPlan(plan,request);
+        if(planContent.length==0){
+            return Result.error("该计划不存在");
+        }else{
+            return Result.success(planContent,"修改计划成功");
+        }
+    }
+
+    @PostMapping("/completeFix")
+    public Result completeFix(int planId,String[]planContent){
+        iPlanService.completeFix(planId,planContent);
+        return Result.success("修改成功");
+    }
 }

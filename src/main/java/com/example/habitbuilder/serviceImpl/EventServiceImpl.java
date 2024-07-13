@@ -76,7 +76,6 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         }
     }
 
-
     @Override
     public List<Event> eventInPlan(LocalDate date, int planId) {
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
@@ -128,6 +127,4 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     public void addEvent(Event event){
         eventMapper.insert(event);
     }
-
-
 }

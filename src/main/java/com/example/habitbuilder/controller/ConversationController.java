@@ -26,10 +26,8 @@ public class ConversationController {
     private IConversationService conversationService;
     //AI问答
     @PostMapping ("/AI")
-    public Result AI(@RequestParam String question,@RequestPart HistoryConversation historyConversation){
+    public Result AI(String question,int userId, int historyConversationId){
         String answer=conversationService.AI(question);
-        int userId= historyConversation.getUserId();
-        int historyConversationId=historyConversation.getHistoryConversationId();
         if(answer=="error"){
             return Result.error("回答失败");
         }else{

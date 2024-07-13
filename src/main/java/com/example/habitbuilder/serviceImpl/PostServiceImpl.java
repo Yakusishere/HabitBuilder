@@ -23,18 +23,6 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
     @Autowired
     private PostMapper postMapper;
 
-    @Autowired
-    private CommentMapper commentMapper;
-
-    @Autowired
-    private LikecommentsMapper likecommentsMapper;
-
-    @Autowired
-    private LikepostMapper likepostMapper;
-
-    @Autowired
-    private CollectpostMapper collectpostMapper;
-
     @Override
     public void addPost(Post post) {
         postMapper.insert(post);
@@ -55,7 +43,9 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
 
     @Override
     public List<Post> getAllPost() {
-        List<Post> posts = postMapper.selectList(null);
+        QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("isViewable", 1);
+        List<Post> posts = postMapper.selectList(queryWrapper);
         posts.sort((t1,t2)->t2.getPostId().compareTo(t1.getPostId())); //按序号排序 最新的在前面
         return posts;
     }
