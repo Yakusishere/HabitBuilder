@@ -33,4 +33,6 @@ public interface IPlanService extends IService<Plan> {
     int lowerScore(int userId,LocalDate date);
 
     List<Plan> searchPlan(String title);
+
+    List<Plan> getPlanList();
 }

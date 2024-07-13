@@ -43,22 +43,6 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
     @Override
     public void deletePost(int postId) {
         postMapper.deleteById(postId);
-
-        QueryWrapper<Comment> wrapper = new QueryWrapper<>();
-        wrapper.eq("postId",postId);
-        commentMapper.delete(wrapper);//删掉帖子所有的评论
-        //评论点赞关系
-        QueryWrapper<Likecomments> wrapper1 = new QueryWrapper<>();
-        wrapper1.eq("postId",postId);
-        likecommentsMapper.delete(wrapper1);
-        //帖子点赞关系
-        QueryWrapper<Likepost> wrapper2 = new QueryWrapper<>();
-        wrapper2.eq("postId",postId);
-        likepostMapper.delete(wrapper2);
-        //帖子收藏关系
-        QueryWrapper<Collectpost> wrapper3 = new QueryWrapper<>();
-        wrapper3.eq("postId",postId);
-        collectpostMapper.delete(wrapper3);
     }
 
     @Override

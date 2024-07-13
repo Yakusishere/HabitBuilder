@@ -29,7 +29,7 @@ public interface IManagerService extends IService<Manager> {
     List<User> getUserList();
 
     //上新计划
-    void addPlan(Plan plan);
+    Plan addPlan(Plan plan);
 
     //下架计划
     void deletePlan(int planId);
@@ -37,4 +37,9 @@ public interface IManagerService extends IService<Manager> {
     //更新计划
     void updatePlan(Plan plan);
 
+    List<User> searchUser(String username);
+
+    List<Plan> managerSearchPlan(String title);
+
+    List<Plan> getPlanList();
 }

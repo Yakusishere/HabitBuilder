@@ -33,6 +33,7 @@ public class ManagerServiceImpl extends ServiceImpl<ManagerMapper, Manager> impl
     @Autowired
     private PlanMapper planMapper;
 
+
     // 管理员注册
     @Override
     public void managerRegister(Manager manager){
@@ -62,14 +63,22 @@ public class ManagerServiceImpl extends ServiceImpl<ManagerMapper, Manager> impl
     //获取用户列表
     @Override
     public List<User> getUserList(){
-
         return userMapper.selectList(null);
+    }
+
+    //实现搜索
+    @Override
+    public List<User> searchUser(String username) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("userName",username);
+        return userMapper.selectList(queryWrapper);
     }
 
     //上新计划
     @Override
-    public void addPlan(Plan plan){
+    public Plan addPlan(Plan plan){
         planMapper.insert(plan);
+        return plan;
     }
 
     //下架计划
@@ -86,4 +95,18 @@ public class ManagerServiceImpl extends ServiceImpl<ManagerMapper, Manager> impl
         planMapper.update(plan,oldPlan);
     }
 
+    @Override
+    public List<Plan> managerSearchPlan(String title) {
+        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("title",title);
+        queryWrapper.eq("userId",0); //userId为0的为模板计划
+        return planMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<Plan> getPlanList() {
+        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId",0);
+        return planMapper.selectList(queryWrapper);
+    }
 }
