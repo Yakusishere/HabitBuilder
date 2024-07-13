@@ -41,7 +41,7 @@ public class Qwen2 {
             throws NoApiKeyException, ApiException, InputRequiredException {
 
         String prompt = "你是一个计划制定专家，我想要制定一份"+planTitle+"，时长为7天，要求："+request+"，用json的格式给我生成，形式模板如下：{\n" +
-                "  \"plan\": [{“day\"：\"第一天\" content:\"跑步50min\"}  ]   }。day为时间，content为当天的计划所有内容，内容丰富一点，只有这两个值，content里面没有别的属性名。只需返回计划主体，不需要多余的表述";
+                "  \"plan\": [{“day\"：\"第一天\" content:\"xxxxx\"}  ]   }。day为时间，content为当天的计划所有内容，内容丰富一点，只有这两个值，content里面没有别的属性名。只需返回计划主体，不需要多余的表述";
 
         Generation gen = new Generation();
         Message userMsg = Message.builder().role(Role.USER.getValue()).content(prompt).build();

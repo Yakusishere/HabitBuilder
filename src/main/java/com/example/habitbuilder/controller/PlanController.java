@@ -161,4 +161,14 @@ public class PlanController {
         }
         return Result.success(plans,"搜索成功");
     }
+
+//    @GetMapping("/eventByPlanId")
+//    public Result eventByPlanId(int planId) {
+//        List<Event> events = iEventService.getEventsByPlanId(planId);
+//        if (events.isEmpty()) {
+//            return Result.error("搜索失败");
+//        }else {
+//            return Result.success(events,"搜索成功");
+//        }
+//    }
 }

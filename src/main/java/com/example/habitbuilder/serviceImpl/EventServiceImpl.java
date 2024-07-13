@@ -128,4 +128,6 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     public void addEvent(Event event){
         eventMapper.insert(event);
     }
+
+
 }
