@@ -10,7 +10,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,21 +30,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Autowired
     private LikecommentsMapper likecommentsMapper;
 
-    private String filterSensitiveWords(String content, List<String> sensitiveWords) {
-        for (String word : sensitiveWords) {
-            content = content.replaceAll("(?i)" + word, "*".repeat(word.length()));
-        }
-        return content;
-    }
     @Override
     public void addComment(Comment comment) { //评论
-        // 定义敏感词列表
-        List<String> sensitiveWords = Arrays.asList("我操", "fuck", "屌","操你","操他","操她");
-
-        // 替换评论中的敏感词
-        String filteredContent = filterSensitiveWords(comment.getContent(), sensitiveWords);
-        comment.setContent(filteredContent);
-
         List<Comment> commentList = commentMapper.selectList(null);
         if(!commentList.isEmpty()){
             commentList.sort((comment1,comment2)->comment2.getCommentCount() - comment1.getCommentCount()); //按commentCount倒序排序

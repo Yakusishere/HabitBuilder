@@ -3,9 +3,12 @@ package com.example.habitbuilder.controller;
 import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.serviceImpl.PostServiceImpl;
+//import com.example.habitbuilder.utils.AliOSSUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,6 +26,14 @@ public class PostController {
     @Autowired
     PostServiceImpl postService;
 
+//    @Autowired
+//    private AliOSSUtils aliOSSUtils;
+//
+//    @PostMapping("/upload")
+//    public Result<String> upload(MultipartFile image) throws IOException {
+//        String url = aliOSSUtils.upload(image);
+//        return Result.success(url, "上传成功");
+//    }
     @PostMapping("/createPost")
     public Result createPost(@RequestBody Post post) {
         post.setPublishDate(LocalDate.now());
@@ -50,7 +61,11 @@ public class PostController {
     @GetMapping("/searchPost")
     public Result searchPost(String title){
         List<Post>posts=postService.searchPost(title);
-        return Result.success(posts,"搜索成功");
+        if(posts.isEmpty()){
+            return Result.error("搜索无结果");
+        }else {
+            return Result.success(posts,"搜索成功");
+        }
     }
 
     @GetMapping("/getPostByUserId")

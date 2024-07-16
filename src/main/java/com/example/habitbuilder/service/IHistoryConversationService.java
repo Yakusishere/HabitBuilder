@@ -1,6 +1,5 @@
 package com.example.habitbuilder.service;
 
-import com.example.habitbuilder.pojo.Conversation;
 import com.example.habitbuilder.pojo.HistoryConversation;
 import com.baomidou.mybatisplus.extension.service.IService;
 

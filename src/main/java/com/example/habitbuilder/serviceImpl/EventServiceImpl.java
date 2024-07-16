@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         }
     }
 
+
     @Override
     public List<Event> eventInPlan(LocalDate date, int planId) {
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
@@ -94,6 +96,9 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
                 .map(Plan::getPlanId)
                 .distinct()
                 .collect(Collectors.toList());
+        if(plans.isEmpty()){
+            return new ArrayList<>();
+        }
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("planId",planIds).eq("executionDate",date);
         List<Event> events=eventMapper.selectList(queryWrapper);
@@ -127,4 +132,6 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     public void addEvent(Event event){
         eventMapper.insert(event);
     }
+
+
 }

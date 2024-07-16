@@ -46,7 +46,7 @@ public class LikepostController {
     @PostMapping("/getIfLikePost")
     public Result getIfLikePost(int userId,int postId) {
 
-        return Result.success(likepostService.getIfLikePost(userId,postId),"取消点赞成功");
+        return Result.success(likepostService.getIfLikePost(userId,postId));
 
     }
 }

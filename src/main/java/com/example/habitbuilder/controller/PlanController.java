@@ -66,8 +66,9 @@ public class PlanController {
         }
         return Result.success("删除成功");
     }
-    @PutMapping("/completeEvent")
-    public Result completeEvent(@RequestParam int eventId){
+    @GetMapping("/completeEvent")
+    public Result completeEvent(Integer eventId){
+        System.out.println("eventId:"+eventId);
         boolean flag=iEventService.completeEvent(eventId);
         if(!flag){
             return Result.error("事件不存在");
@@ -80,7 +81,7 @@ public class PlanController {
         }
     }
     //获取当天用户要做的所有事件
-    @GetMapping("/dailyPlanType")
+    @PostMapping("/dailyPlanType")
     public Result dailyPlanType(int userId, LocalDate date){
         List<Object[]>plans =iPlanService.dailyPlanType(userId,date);
         if(plans.isEmpty()){
@@ -99,8 +100,8 @@ public class PlanController {
         }
         return Result.success(events,"查找成功");
     }
-    @GetMapping("/dailyEvent")
-    public Result dailyEvent(int userId,LocalDate date){
+    @PostMapping("/dailyEvent")
+    public Result dailyEvent(Integer userId,LocalDate date){
         List<Event>events =iEventService.dailyEvent(userId,date);
         if(events.isEmpty()){
             return Result.error("今天没有计划");
@@ -115,7 +116,6 @@ public class PlanController {
     }
     @PostMapping("/autoAddPlan")
     public Result selectAutoPlan(@RequestBody Plan plan) {
-
         plan.setCreateDate(LocalDateTime.now().withNano(0));
         planServiceImpl.autoAddPlan(plan);
         return Result.success("计划添加成功");
@@ -162,19 +162,5 @@ public class PlanController {
         return Result.success(plans,"搜索成功");
     }
 
-    @PostMapping("/fixPlan")
-    public Result fixPlan( @RequestPart Plan plan,@RequestParam String request){
-        String[]planContent=iPlanService.fixPlan(plan,request);
-        if(planContent.length==0){
-            return Result.error("该计划不存在");
-        }else{
-            return Result.success(planContent,"修改计划成功");
-        }
-    }
 
-    @PostMapping("/completeFix")
-    public Result completeFix(int planId,String[]planContent){
-        iPlanService.completeFix(planId,planContent);
-        return Result.success("修改成功");
-    }
 }
