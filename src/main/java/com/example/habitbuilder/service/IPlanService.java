@@ -35,4 +35,8 @@ public interface IPlanService extends IService<Plan> {
     List<Plan> searchPlan(String title);
 
     List<Plan> getPlanList();
+
+    String[] fixPlan(Integer planId,String request);
+
+    void completeFix(int planId, String[] planContent);
 }

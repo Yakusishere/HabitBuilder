@@ -7,6 +7,7 @@ import com.example.habitbuilder.service.IConversationService;
 import com.example.habitbuilder.service.IHistoryConversationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -85,11 +86,11 @@ public class HistoryConversationController {
 
     @GetMapping("/findConversationsByHistory")
     public Result findConversationsByHistory(int historyConversationId){
-       List<Conversation>conversations= iConversationService.findConversationsByHistory(historyConversationId);
-       if(conversations.isEmpty()){
-           return Result.error("无历史记录");
-       }else {
-           return Result.success(conversations,"查找成功");
-       }
+        List<Conversation>conversations= iConversationService.findConversationsByHistory(historyConversationId);
+        if(conversations.isEmpty()){
+            return Result.error("无历史记录");
+        }else {
+            return Result.success(conversations,"查找成功");
+        }
     }
 }

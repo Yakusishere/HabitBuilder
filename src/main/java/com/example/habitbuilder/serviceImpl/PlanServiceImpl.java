@@ -152,4 +152,33 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
     public List<Plan> getPlanList(){
         return planMapper.selectList(null);
     }// 所有计划
+
+    @Override
+    public String[] fixPlan(Integer planId,String request) {
+        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("planId",planId);
+        Plan plan = planMapper.selectOne(queryWrapper);
+        System.out.println(planId);
+        String decription = plan.getDescription();
+        String[] planContent = new String[0];
+        List<Event>events=eventMapper.selectList(new QueryWrapper<Event>().eq("planId", plan.getPlanId()));
+        try{
+            planContent=Qwen2.fixCallWithMessage(decription,events,request);
+        }catch (ApiException | NoApiKeyException | InputRequiredException e){
+            System.out.println(e.getMessage());
+        }
+
+        return planContent;
+    }
+
+    @Override
+    public void completeFix(int planId, String[] planContent) {
+        List<Event>events=eventMapper.selectList(new QueryWrapper<Event>().eq("planId", planId));
+        for(int i=0;i<events.size();i++){
+            String descripetion=planContent[i];
+            Event event=events.get(i);
+            event.setDescription(descripetion);
+            eventMapper.updateById(event);
+        }
+    }
 }
