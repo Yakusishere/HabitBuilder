@@ -2,9 +2,11 @@ package com.example.habitbuilder.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.habitbuilder.mapper.LikecommentsMapper;
+import com.example.habitbuilder.mapper.PostMapper;
 import com.example.habitbuilder.pojo.Comment;
 import com.example.habitbuilder.mapper.CommentMapper;
 import com.example.habitbuilder.pojo.Likecomments;
+import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.service.ICommentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Autowired
     private LikecommentsMapper likecommentsMapper;
 
+    @Autowired
+    private PostMapper postMapper;
+
     @Override
     public void addComment(Comment comment) { //评论
         List<Comment> commentList = commentMapper.selectList(null);
@@ -39,13 +44,23 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }else{
             comment.setCommentCount(1);// 如果为空设置为1
         }
+        int postId=comment.getPostId();
+        QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("postId", postId);
+        Post post=postMapper.selectOne(queryWrapper);
+        post.setCommentCount(post.getCommentCount()+1);
+        postMapper.updateById(post);
         commentMapper.insert(comment);
     }
 
     @Override
     public void addReplyComment(Comment comment) {
-        //回复的commentCount 和 评论的commentCount相同
         commentMapper.insert(comment);
+        QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("postId",comment.getPostId());
+        Post post = postMapper.selectOne(queryWrapper);
+        post.setCommentCount(post.getCommentCount()+1);
+        postMapper.updateById(post);
     }
 
     @Override

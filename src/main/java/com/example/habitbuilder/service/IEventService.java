@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface IEventService extends IService<Event> {
 
-   void createEvent(int planId, String eventDescription, LocalTime startTime, LocalTime endTime);
+   void createEvent(Event event);
 
    boolean changeEvent(int eventId, String eventDescription, LocalTime startTime, LocalTime endTime);
 
@@ -38,4 +38,5 @@ public interface IEventService extends IService<Event> {
    void addEvent(Event event);
 
 
+   Object setColor(int userId,LocalDate localDate);
 }

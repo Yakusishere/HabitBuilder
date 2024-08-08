@@ -1,13 +1,18 @@
 package com.example.habitbuilder.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.habitbuilder.mapper.PostMapper;
 import com.example.habitbuilder.pojo.Collectpost;
 import com.example.habitbuilder.mapper.CollectpostMapper;
+import com.example.habitbuilder.pojo.Likepost;
+import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.service.ICollectpostService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,9 +27,17 @@ import java.util.List;
 public class CollectpostServiceImpl extends ServiceImpl<CollectpostMapper, Collectpost> implements ICollectpostService {
     @Autowired
     private CollectpostMapper collectpostMapper;
+    @Autowired
+    private PostMapper postMapper;
 
     @Override
     public void addCollection(Collectpost collectpost) {
+        int postId=collectpost.getPostId();
+        QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("postId", postId);
+        Post post=postMapper.selectOne(queryWrapper);
+        post.setFavCount(post.getFavCount()+1);
+        postMapper.updateById(post);
         collectpostMapper.insert(collectpost);
     }
 
@@ -32,14 +45,27 @@ public class CollectpostServiceImpl extends ServiceImpl<CollectpostMapper, Colle
     public void deleteCollection(int postId,int userId) {
         QueryWrapper<Collectpost> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("postId", postId).eq("userId", userId);
+        QueryWrapper<Post> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("postId",postId);
+        Post post = postMapper.selectOne(queryWrapper1);
+        post.setFavCount(post.getFavCount()-1);
         collectpostMapper.delete(queryWrapper);
+        postMapper.updateById(post);
     }
 
     @Override
-    public List<Collectpost> getCollections(int userId) {
+    public List<Post> getCollections(int userId) {
         QueryWrapper<Collectpost> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userId", userId);
-        return collectpostMapper.selectList(queryWrapper);
+        List<Collectpost>collectposts=collectpostMapper.selectList(queryWrapper);
+        List<Post>posts= new ArrayList<>();
+        for (int i = 0; i < collectposts.size(); i++) {
+            QueryWrapper<Post> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("postId", collectposts.get(i).getPostId());
+            Post post=postMapper.selectOne(queryWrapper1);
+            posts.add(post);
+        }
+        return posts;
     }
 
     @Override // 找一个post是否为收藏

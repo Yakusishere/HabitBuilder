@@ -86,11 +86,11 @@ public class HistoryConversationController {
 
     @GetMapping("/findConversationsByHistory")
     public Result findConversationsByHistory(int historyConversationId){
-       List<Conversation>conversations= iConversationService.findConversationsByHistory(historyConversationId);
-       if(conversations.isEmpty()){
-           return Result.error("无历史记录");
-       }else {
-           return Result.success(conversations,"查找成功");
-       }
+        List<Conversation>conversations= iConversationService.findConversationsByHistory(historyConversationId);
+        if(conversations.isEmpty()){
+            return Result.error("无历史记录");
+        }else {
+            return Result.success(conversations,"查找成功");
+        }
     }
 }

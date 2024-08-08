@@ -54,4 +54,6 @@ public class Plan implements Serializable {
     @TableField("createDate")
     private LocalDateTime createDate;
 
+    @TableField("tag")
+    private String tag;
 }

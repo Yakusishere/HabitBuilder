@@ -1,10 +1,12 @@
 package com.example.habitbuilder.serviceImpl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.mapper.UserMapper;
 import com.example.habitbuilder.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.habitbuilder.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,15 @@ import java.util.Map;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
     @Autowired
     private UserMapper userMapper;
+
+    @Override
+    public User findByUserId(int userId) {
+        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(User::getUserId,userId);
+        User user = userMapper.selectOne(lqw);
+        return user;
+    }
+
     @Override
     public boolean findByUserName(String username) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -40,15 +51,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void register(String username, String password) {
         LocalDateTime localDateTime= LocalDateTime.now();
         //添加
-        userMapper.insert(new User(null,username,password,null,localDateTime,0));
+        userMapper.insert(new User(null,username,password,null,localDateTime,100));
     }
 
     @Override
-    public User login(String username, String password) {
+    public String login(String username, String password) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userName", username).eq("password", password);
         User user = userMapper.selectOne(queryWrapper);
-        return user;
+        if(user!=null){
+            JwtUtils jwtUtils = new JwtUtils();
+            return jwtUtils.createToken(user.getUserId(),user.getUserName());
+        }
+        return null;
     }
 
     @Override

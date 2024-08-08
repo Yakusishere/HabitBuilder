@@ -2,6 +2,7 @@ package com.example.habitbuilder.service;
 
 import com.example.habitbuilder.pojo.Likepost;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.habitbuilder.pojo.Post;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface ILikepostService extends IService<Likepost> {
     String getIfLikePost(int userId, int postId);
 
     boolean isDuplicateLikePost(int postId, int userId);
+
+    List<Post> getLikePostByUserId(int userId);
 }

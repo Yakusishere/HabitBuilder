@@ -1,6 +1,8 @@
 package com.example.habitbuilder.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.habitbuilder.mapper.CommentMapper;
+import com.example.habitbuilder.pojo.Comment;
 import com.example.habitbuilder.pojo.Likecomments;
 import com.example.habitbuilder.mapper.LikecommentsMapper;
 import com.example.habitbuilder.pojo.Likepost;
@@ -24,8 +26,17 @@ public class LikecommentsServiceImpl extends ServiceImpl<LikecommentsMapper, Lik
     @Autowired
     private LikecommentsMapper likecommentsMapper;
 
+    @Autowired
+    private CommentMapper commentMapper;
+
     @Override
     public void addLikeComment(Likecomments likecomments) {
+        int commentId=likecomments.getCommentId();
+        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("commentId", commentId);
+        Comment comment=commentMapper.selectOne(queryWrapper);
+        comment.setLikeCount(comment.getLikeCount()+1);
+        commentMapper.updateById(comment);
         likecommentsMapper.insert(likecomments);
     }
 
@@ -33,7 +44,12 @@ public class LikecommentsServiceImpl extends ServiceImpl<LikecommentsMapper, Lik
     public void deleteLikeComment(int commentId,int userId) {
         QueryWrapper<Likecomments> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("commentId", commentId).eq("userId", userId);
+        QueryWrapper<Comment> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("commentId",commentId);
+        Comment comment = commentMapper.selectOne(queryWrapper1);
+        comment.setLikeCount(comment.getLikeCount()-1);
         likecommentsMapper.delete(queryWrapper);
+        commentMapper.updateById(comment);
     }
 
     public String getIfLikeComment(int userId, int commentId) {

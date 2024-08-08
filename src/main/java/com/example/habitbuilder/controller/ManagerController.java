@@ -1,5 +1,6 @@
 package com.example.habitbuilder.controller;
 
+import com.example.habitbuilder.mapper.*;
 import com.example.habitbuilder.pojo.Plan;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.serviceImpl.ManagerServiceImpl;
@@ -22,11 +23,6 @@ import java.time.LocalDateTime;
 public class ManagerController {
     @Autowired
     private ManagerServiceImpl managerService;
-
-    @Autowired
-    private PlanServiceImpl planService;
-    @Autowired
-    private PlanServiceImpl planServiceImpl;
 
     @PostMapping("/managerLogin")
     public Result managerLogin(@RequestBody Manager manager){
@@ -103,4 +99,66 @@ public class ManagerController {
         return Result.success("更新计划成功");
     }
 
+    @GetMapping("/getUserStatistics")
+    public Result getUserStatistics() {
+        int totalUserCount = managerService.getUserCount();
+        int activeUserCount = managerService.getActiveUserCount();
+        int usersWithPostsOnly = managerService.getUsersWithPostsOnly();
+        int usersWithPlansOnly = managerService.getUsersWithPlansOnly();
+        int usersWithBothPostsAndPlans = managerService.getUsersWithBothPostsAndPlans();
+
+        int[] userStatistics = new int[]{
+                totalUserCount,
+                activeUserCount,
+                usersWithPostsOnly,
+                usersWithPlansOnly,
+                usersWithBothPostsAndPlans
+        };
+
+        return Result.success(userStatistics, "获取用户统计数据成功");
+    }
+
+
+
+
+    @GetMapping("/getPlanCountByTag")
+    public Result getPlanCountByTag() {
+        int[] planCountByTag = managerService.getPlanCountByTag();
+        return Result.success(planCountByTag, "获取每个tag的计划数量成功");
+    }
+
+
+
+    @GetMapping("/getGeneralStatistics")
+    public Result getGeneralStatistics() {
+        int totalPlanCount = managerService.getTotalPlanCount();
+        int totalPostCount = managerService.getTotalPostCount();
+        int totalConversationCount = managerService.getTotalConversationCount();
+
+        int[] generalStatistics = new int[]{
+                totalPlanCount,
+                totalPostCount,
+                totalConversationCount
+        };
+
+        return Result.success(generalStatistics, "获取总统计数据成功");
+    }
+
+
+    @GetMapping("/getAverageStatistics")
+    public Result getAverageStatistics() {
+        double averagePlanCount = managerService.getAveragePlanCount();
+        double averagePostCount = managerService.getAveragePostCount();
+        double averageConversationCount = managerService.getAverageConversationCount();
+        double averageEventCount = managerService.getAverageEventCount();
+
+        int[] averageStatistics = new int[]{
+                (int) Math.ceil(averagePlanCount),
+                (int) Math.ceil(averagePostCount),
+                (int) Math.ceil(averageConversationCount),
+                (int) Math.ceil(averageEventCount)
+        };
+
+        return Result.success(averageStatistics, "获取平均统计数据成功");
+    }
 }

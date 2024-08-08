@@ -1,6 +1,7 @@
 package com.example.habitbuilder.controller;
 
 import com.example.habitbuilder.pojo.Event;
+import com.example.habitbuilder.pojo.HistoryConversation;
 import com.example.habitbuilder.pojo.Plan;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.service.IEventService;
@@ -36,11 +37,7 @@ public class PlanController {
     private IUserService iUserService;
     @PostMapping("/createEvent")
     public Result createEvent(@RequestBody Event eventRequest) {
-        int planId = eventRequest.getPlanId();
-        String eventDescription = eventRequest.getDescription();
-        LocalTime startTime = eventRequest.getStartTime();
-        LocalTime endTime = eventRequest.getEndTime();
-        iEventService.createEvent(planId, eventDescription, startTime, endTime);
+        iEventService.createEvent(eventRequest);
         return Result.success("创建事件成功");
     }
     @PutMapping("/changeEvent")
@@ -66,8 +63,8 @@ public class PlanController {
         }
         return Result.success("删除成功");
     }
-    @PutMapping("/completeEvent")
-    public Result completeEvent(@RequestParam int eventId){
+    @GetMapping("/completeEvent")
+    public Result completeEvent(Integer eventId){
         boolean flag=iEventService.completeEvent(eventId);
         if(!flag){
             return Result.error("事件不存在");
@@ -80,7 +77,7 @@ public class PlanController {
         }
     }
     //获取当天用户要做的所有事件
-    @GetMapping("/dailyPlanType")
+    @PostMapping("/dailyPlanType")
     public Result dailyPlanType(int userId, LocalDate date){
         List<Object[]>plans =iPlanService.dailyPlanType(userId,date);
         if(plans.isEmpty()){
@@ -99,26 +96,41 @@ public class PlanController {
         }
         return Result.success(events,"查找成功");
     }
-    @GetMapping("/dailyEvent")
-    public Result dailyEvent(int userId,LocalDate date){
+    @PostMapping("/dailyEvent")
+    public Result dailyEvent(Integer userId,LocalDate date){
         List<Event>events =iEventService.dailyEvent(userId,date);
         if(events.isEmpty()){
-            return Result.error("今天没有计划");
+            return Result.error("false");
+        }else {
+            for (int i = 0; i < events.size()-1; i++) {
+                Event currentEvent = events.get(i);
+                Event nextEvent = events.get(i + 1);
+                if(currentEvent.getEndTime().isAfter(nextEvent.getStartTime())){
+                    return Result.success(events,"true");
+                }
+            }
         }
-        return Result.success(events,"查找成功");
+        return Result.success(events,"false");
+    }
+    @GetMapping("/getPlanById")
+    public Result getPlanById(int planId){
+        Plan plan=iPlanService.getById(planId);
+        if(plan==null){
+            return Result.error("该计划不存在");
+        }else {
+            return Result.success(plan,"查找成功");
+        }
     }
     @PostMapping("/addPlan")
     public Result selectPlan(@RequestBody Plan plan) {
         plan.setCreateDate(LocalDateTime.now());
-        planServiceImpl.addPlan(plan);
-        return Result.success("计划添加成功");
+        return Result.success(planServiceImpl.addPlan(plan),"计划添加成功");
     }
     @PostMapping("/autoAddPlan")
     public Result selectAutoPlan(@RequestBody Plan plan) {
-
         plan.setCreateDate(LocalDateTime.now().withNano(0));
-        planServiceImpl.autoAddPlan(plan);
-        return Result.success("计划添加成功");
+        HistoryConversation historyConversation=planServiceImpl.autoAddPlan(plan);
+        return Result.success(historyConversation,"计划添加成功");
     }
 
     @PostMapping("deletePlan")
@@ -153,22 +165,29 @@ public class PlanController {
         return Result.success(planServiceImpl.getPlanList(),"成功获取所有模板计划");
     }
 
-    @GetMapping("/searchPlan")
-    public Result searchPlan(String title) {
-        List<Plan>plans=planServiceImpl.searchPlan(title);
-        if (plans.isEmpty()) {
-            return Result.error("搜索失败");
-        }
+    @PostMapping("/searchPlan")
+    public Result searchPlan(String title,String tag,int userId) {
+        List<Plan>plans=planServiceImpl.searchPlan(title,tag,userId);
         return Result.success(plans,"搜索成功");
     }
+    @PostMapping("/fixPlan")
+    public Result fixPlan(Integer planId, String request){
+        String[]planContent=iPlanService.fixPlan(planId,request);
+        if(planContent.length==0){
+            return Result.error("该计划不存在");
+        }else{
+            return Result.success(planContent,"修改计划成功");
+        }
+    }
 
-//    @GetMapping("/eventByPlanId")
-//    public Result eventByPlanId(int planId) {
-//        List<Event> events = iEventService.getEventsByPlanId(planId);
-//        if (events.isEmpty()) {
-//            return Result.error("搜索失败");
-//        }else {
-//            return Result.success(events,"搜索成功");
-//        }
-//    }
+    @PostMapping("/completeFix")
+    public Result completeFix(int planId,String[]planContent){
+        iPlanService.completeFix(planId,planContent);
+        return Result.success("修改成功");
+    }
+
+    @GetMapping("/searchByTag")
+    public Result searchTagPlan(String tag,int userId) {
+        return Result.success(planServiceImpl.searchByTag(tag,userId),"成功搜索主题模板");
+    }
 }

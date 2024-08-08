@@ -2,6 +2,7 @@ package com.example.habitbuilder.service;
 
 import com.example.habitbuilder.pojo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.stereotype.Service;
 
 /**
  * <p>
@@ -13,14 +14,15 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IUserService extends IService<User> {
 
-    //根据用户名查找用户
+    User findByUserId(int userId);
 
+    //根据用户名查找用户
     boolean findByUserName(String username);
 
     //注册
     void register(String username, String password);
 
-    User login(String username, String password);
+    String login(String username, String password);
 
     void changeScore(int userId);
 

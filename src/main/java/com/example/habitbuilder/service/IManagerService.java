@@ -42,4 +42,32 @@ public interface IManagerService extends IService<Manager> {
     List<Plan> managerSearchPlan(String title);
 
     List<Plan> getPlanList();
+
+    int getUserCount();
+
+    int getActiveUserCount();
+
+    int getUsersWithPostsOnly();
+
+    int getUsersWithPlansOnly();
+
+    int getUsersWithBothPostsAndPlans();
+
+    int getTotalPostCount();
+
+    int[] getPlanCountByTag();
+
+    int getTotalPlanCount();
+
+    int getTotalConversationCount();
+
+    int getTotalEventCount();
+
+    double getAveragePlanCount();
+
+    double getAveragePostCount();
+
+    double getAverageConversationCount();
+
+    double getAverageEventCount();
 }

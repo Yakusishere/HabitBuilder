@@ -1,10 +1,13 @@
 package com.example.habitbuilder.controller;
 
 import com.example.habitbuilder.pojo.Collectpost;
+import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.serviceImpl.CollectpostServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -38,13 +41,17 @@ public class CollectpostController {
     // 是否收藏
     @PostMapping("/getPostCollection")
     public Result getPostCollection( int userId,int postId) {
-
         return Result.success(collectpostService.getPostCollections(userId,postId));
 
     }
 
     @GetMapping("/getCollections")
     public Result getCollections(int userId) {
-        return Result.success(collectpostService.getCollections(userId),"收藏列表获取成功");
+        List<Post>posts=collectpostService.getCollections(userId);
+        if(posts.isEmpty()){
+            return Result.error("收藏列表为空");
+        }else{
+            return Result.success(posts,"收藏列表获取成功");
+        }
     }
 }

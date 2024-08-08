@@ -8,7 +8,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import io.swagger.annotations.ApiModel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -23,6 +25,8 @@ import lombok.Setter;
 @Setter
 @TableName("historyconversation")
 @ApiModel(value = "Historyconversation对象", description = "")
+@NoArgsConstructor
+@AllArgsConstructor
 public class HistoryConversation implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -38,4 +42,7 @@ public class HistoryConversation implements Serializable {
 
    @TableField("createTime")
     private LocalDateTime createTime;
+
+   @TableField("planId")
+    private int planId;
 }

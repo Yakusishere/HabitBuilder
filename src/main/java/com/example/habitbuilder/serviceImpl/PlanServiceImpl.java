@@ -6,8 +6,10 @@ import com.alibaba.dashscope.exception.NoApiKeyException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.habitbuilder.Qwen2;
 import com.example.habitbuilder.mapper.EventMapper;
+import com.example.habitbuilder.mapper.HistoryConversationMapper;
 import com.example.habitbuilder.mapper.UserMapper;
 import com.example.habitbuilder.pojo.Event;
+import com.example.habitbuilder.pojo.HistoryConversation;
 import com.example.habitbuilder.pojo.Plan;
 import com.example.habitbuilder.mapper.PlanMapper;
 import com.example.habitbuilder.pojo.User;
@@ -17,11 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * <p>
@@ -43,6 +45,8 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
     private UserMapper userMapper;
     @Autowired
     private UserServiceImpl userServiceImpl;
+    @Autowired
+    private HistoryConversationMapper historyConversationMapper;
 
     @Override
     public List<Object[]> dailyPlanType(int userId,LocalDate date) {
@@ -68,8 +72,9 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
         Plan plan = planMapper.selectOne(queryWrapper);
         return plan != null ? plan.getUserId() : null;
     }
-    public void addPlan(Plan plan) {
+    public Plan addPlan(Plan plan) {
         planMapper.insert(plan);
+        return plan;
     }
 
     public void deletePlan(int planId) {
@@ -120,14 +125,20 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
     }
 
     @Override
-    public List<Plan> searchPlan(String title) {
+    public List<Plan> searchPlan(String title,String tag,int userId) {
         QueryWrapper <Plan> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("title", title);
+        queryWrapper.eq("userId", userId);
+        if(!Objects.equals(tag, "")){
+            queryWrapper.eq("tag", tag);
+        }
+        if(!Objects.equals(title, "")){
+            queryWrapper.like("title", title);
+        }
         return planMapper.selectList(queryWrapper);
     }
 
     @Override
-    public void autoAddPlan(Plan plan) {
+    public HistoryConversation autoAddPlan(Plan plan) {
         plan.setStartDate(LocalDate.from(plan.getCreateDate().plusDays(1)));
         plan.setEndDate(LocalDate.from(plan.getCreateDate().plusDays(7)));
 
@@ -138,18 +149,60 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
         LocalDate startDate = newPlan.getStartDate();  //从计划开始的日期开始一周
         try {
             String[] events = Qwen2.streamCallWithMessage(newPlan.getTitle(),newPlan.getDescription()); // 或者这个计划的所有事件
+            int i=0;
             for(String event : events){
                 //event的起始时间设置重新考虑
-                Event eventDay = new Event(0,newPlan.getPlanId(),event,startDate.plusDays(1), LocalTime.of(0, 0, 0),LocalTime.of(0, 0, 0),false);
+                Event eventDay = new Event(0,newPlan.getPlanId(),event,startDate.plusDays(i), LocalTime.of(12, 0, 0),LocalTime.of(13, 0, 0),false);
+                i++;
                 eventService.save(eventDay); // 存入数据库 这个方法会先检查数据库是否有这个值，没有则插入，有则更新
             }
         } catch (ApiException | NoApiKeyException | InputRequiredException e) {
             System.out.println(e.getMessage()); //报错处理 gpt输出格式有问题
     }
+        HistoryConversation historyConversation = new HistoryConversation (null,plan.getTitle(),plan.getUserId(), LocalDateTime.now(),plan.getPlanId());
+        historyConversationMapper.insert(historyConversation);
+        return historyConversation;
         }
 
     @Override
     public List<Plan> getPlanList(){
         return planMapper.selectList(null);
     }// 所有计划
+
+    @Override
+    public String[] fixPlan(Integer planId,String request) {
+        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("planId",planId);
+        Plan plan = planMapper.selectOne(queryWrapper);
+        System.out.println(planId);
+        String decription = plan.getDescription();
+        String[] planContent = new String[0];
+        List<Event>events=eventMapper.selectList(new QueryWrapper<Event>().eq("planId", plan.getPlanId()));
+        try{
+            planContent=Qwen2.fixCallWithMessage(decription,events,request);
+        }catch (ApiException | NoApiKeyException | InputRequiredException e){
+            System.out.println(e.getMessage());
+        }
+
+        return planContent;
+    }
+
+    @Override
+    public void completeFix(int planId, String[] planContent) {
+        List<Event>events=eventMapper.selectList(new QueryWrapper<Event>().eq("planId", planId));
+        for(int i=0;i<events.size();i++){
+            String descripetion=planContent[i];
+            Event event=events.get(i);
+            event.setDescription(descripetion);
+            eventMapper.updateById(event);
+        }
+    }
+
+    @Override
+    public List<Plan> searchByTag(String tag,int userId) {
+        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("tag", tag);
+        queryWrapper.eq("userId",userId);
+        return planMapper.selectList(queryWrapper);
+    }
 }

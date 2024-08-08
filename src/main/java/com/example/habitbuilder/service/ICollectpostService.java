@@ -2,6 +2,9 @@ package com.example.habitbuilder.service;
 
 import com.example.habitbuilder.pojo.Collectpost;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.habitbuilder.pojo.Post;
+
+import java.util.List;
 
 /**
  * <p>
@@ -19,7 +22,7 @@ public interface ICollectpostService extends IService<Collectpost> {
 
     String getPostCollections(int userId, int postId);
 
-    Object getCollections(int userId);
+    List<Post> getCollections(int userId);
 
     boolean isDuplicateCollection(int postId, int userId);
 }

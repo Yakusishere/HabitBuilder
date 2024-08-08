@@ -1,10 +1,13 @@
 package com.example.habitbuilder.controller;
 
 import com.example.habitbuilder.pojo.Likepost;
+import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.serviceImpl.LikepostServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -45,8 +48,16 @@ public class LikepostController {
 
     @PostMapping("/getIfLikePost")
     public Result getIfLikePost(int userId,int postId) {
+        return Result.success(likepostService.getIfLikePost(userId,postId));
+    }
 
-        return Result.success(likepostService.getIfLikePost(userId,postId),"取消点赞成功");
-
+    @GetMapping("/getLikePostByUserId")
+    public Result getLikePostByUserId(int userId){
+        List<Post>posts=likepostService.getLikePostByUserId(userId);
+        if(posts.isEmpty()){
+            return Result.error("无点赞过的帖子");
+        }else {
+            return Result.success(posts,"获取成功");
+        }
     }
 }

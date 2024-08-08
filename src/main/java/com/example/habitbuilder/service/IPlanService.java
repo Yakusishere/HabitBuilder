@@ -1,5 +1,6 @@
 package com.example.habitbuilder.service;
 
+import com.example.habitbuilder.pojo.HistoryConversation;
 import com.example.habitbuilder.pojo.Plan;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -20,19 +21,25 @@ public interface IPlanService extends IService<Plan> {
 
     Integer findUserIdByPlanId(int planId);
 
-    void addPlan(Plan plan);
+    Plan addPlan(Plan plan);
 
     void deletePlan(int planId);
 
     void updatePlan(Plan plan);
 
-    void autoAddPlan(Plan plan);
+    HistoryConversation autoAddPlan(Plan plan);
 
     List<Plan> getMyPlan(int userId);
 
     int lowerScore(int userId,LocalDate date);
 
-    List<Plan> searchPlan(String title);
+    List<Plan> searchPlan(String title,String tag,int userId);
 
     List<Plan> getPlanList();
+
+    String[] fixPlan(Integer planId,String request);
+
+    void completeFix(int planId, String[] planContent);
+
+    Object searchByTag(String tag, int userId);
 }
