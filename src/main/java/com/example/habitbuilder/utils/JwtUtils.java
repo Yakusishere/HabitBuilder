@@ -52,25 +52,20 @@ public class JwtUtils {
 	 * 验证token是否有效
 	 *
 	 * @param token 请求头中携带的token
-	 * @return token验证结果  2-token过期；1-token认证通过；0-token认证失败
+	 * @return token验证结果  2-token过期；1-token认证失败；0-token认证通过
 	 */
 	public int verify(String token) {
-		System.out.println("调用了verify方法");
-
 		Claims claims = null;
 		try {
 			//token过期后，会抛出ExpiredJwtException 异常，通过这个来判定token过期，
-			System.out.println(1111111);
 			claims = Jwts.parser().setSigningKey(KEY).parseClaimsJws(token).getBody();
-			System.out.println(2222222);
 		} catch (ExpiredJwtException e) {
 			return 2;
 		}
 		//从token中获取用户id，查询该Id的用户是否存在，存在则token验证通过
 		String id = claims.getId();
-		System.out.println("userId" + id);
 		User user = userService.findByUserId(Integer.parseInt(id));
-		if (user != null) {
+		if (user == null) {
 			return 1;
 		} else {
 			return 0;

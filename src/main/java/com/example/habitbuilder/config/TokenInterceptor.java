@@ -18,28 +18,26 @@ public class TokenInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		System.out.println("调用了方法");
 		HttpServletResponseWrapper wrapper = new HttpServletResponseWrapper(response);
 		String token = request.getHeader("Authorization");
-		System.out.println(token);
 		if (jwtUtils.verify(token) != 0) {
-			wrapper.sendRedirect("fail/token/invalid");
-			System.out.println("invalid token");
+			wrapper.sendRedirect("/user/login");
+			//System.out.println("invalid token");
 			return false;
 		}
-		System.out.println("valid token");
+		//System.out.println("valid token");
 		return true;
 	}
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		System.out.println("拦截器处理结束...");
+		//System.out.println("拦截器处理结束...");
 		HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
 	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-		System.out.println("请求结束...");
+		//System.out.println("请求结束...");
 		HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
 	}
 }
