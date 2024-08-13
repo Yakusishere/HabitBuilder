@@ -72,4 +72,15 @@ public class JwtUtils {
 		}
 	}
 
+	public int extractUserId(String token){
+		Claims claims = null;
+		try {
+			//token过期后，会抛出ExpiredJwtException 异常，通过这个来判定token过期，
+			claims = Jwts.parser().setSigningKey(KEY).parseClaimsJws(token).getBody();
+		} catch (ExpiredJwtException e) {
+			return 2;
+		}
+		//从token中获取用户id，查询该Id的用户是否存在，存在则token验证通过
+		return Integer.parseInt(claims.getId());
+	}
 }
