@@ -51,11 +51,11 @@ public class PostController {
         return Result.success("删除帖子成功");
     }
 
-    @PostMapping("/upload")
+   /* @PostMapping("/upload")
     public Result upload(MultipartFile image) throws IOException {
         String url = aliOSSUtils.upload(image);
         return Result.success(url, "上传成功");
-    }
+    }*/
     @PostMapping("/createPost")
     public Result createPost(@RequestBody Post post) {
         post.setPublishDate(LocalDate.now());
