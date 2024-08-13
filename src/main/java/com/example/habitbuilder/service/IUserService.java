@@ -1,8 +1,12 @@
 package com.example.habitbuilder.service;
 
+import com.example.habitbuilder.domain.PageQuery;
+import com.example.habitbuilder.domain.bo.UserBo;
 import com.example.habitbuilder.pojo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,6 +17,8 @@ import org.springframework.stereotype.Service;
  * @since 2024-07-03
  */
 public interface IUserService extends IService<User> {
+
+    List<User> getUserList(User user, PageQuery pageQuery);
 
     User findByUserId(int userId);
 

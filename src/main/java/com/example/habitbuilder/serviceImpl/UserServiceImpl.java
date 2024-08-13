@@ -1,7 +1,11 @@
 package com.example.habitbuilder.serviceImpl;
 
+import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.habitbuilder.domain.PageQuery;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.mapper.UserMapper;
 import com.example.habitbuilder.service.IUserService;
@@ -10,10 +14,9 @@ import com.example.habitbuilder.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -27,6 +30,19 @@ import java.util.Map;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 	@Autowired
 	private UserMapper userMapper;
+
+	@Override
+	public List<User> getUserList(User user, PageQuery pageQuery){
+		// 创建查询条件
+		LambdaQueryWrapper<User> lqw = Wrappers.lambdaQuery();
+		lqw.eq(user.getUserId() != null, User::getUserId, user.getUserId());
+		lqw.eq(user.getUserName() != null, User::getUserName, user.getUserName());
+		lqw.eq(user.getNickName() != null, User::getNickName, user.getNickName());
+		// 执行分页查询
+		Page<User> resultPage = userMapper.selectPage(pageQuery.build(), lqw);
+		// 返回当前页的数据记录
+		return resultPage.getRecords();
+	}
 
 	@Override
 	public User findByUserId(int userId) {
@@ -57,7 +73,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 	public void register(String username, String password) {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		//添加
-		userMapper.insert(new User(null, username, password, null, localDateTime, 100));
+		userMapper.insert(new User(null, username, null, password, null, localDateTime, 100));
 	}
 
 	@Override
@@ -92,4 +108,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 		queryWrapper.eq("userId", id);
 		return userMapper.selectOne(queryWrapper);
 	}
+
+	/*private LambdaQueryWrapper<UserVo> buildlqw(UserBo bo){
+		LambdaQueryWrapper<UserVo> lqw = new LambdaQueryWrapper<>();
+	}*/
 }

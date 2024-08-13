@@ -1,10 +1,13 @@
 package com.example.habitbuilder.controller;
 
+import com.example.habitbuilder.domain.PageQuery;
+import com.example.habitbuilder.domain.bo.UserBo;
 import com.example.habitbuilder.mapper.*;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IUserService;
 import com.example.habitbuilder.serviceImpl.UserServiceImpl;
+import com.example.habitbuilder.utils.LoginHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,16 @@ import java.util.List;
 public class UserController {
 	@Autowired
 	private IUserService userService;
+
+	@Autowired
+	private LoginHelper loginHelper;
+
+	@GetMapping("/list")
+	public Result getUserList(User user, PageQuery pageQuery){
+		System.out.println("id:"+user.getUserId());
+		System.out.println("user:"+user.getUserName());
+		return Result.success(userService.getUserList(user,pageQuery),"查询成功");
+	}
 
 
 	// 删除用户

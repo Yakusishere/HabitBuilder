@@ -6,7 +6,8 @@ spring:
     url: jdbc:mysql://localhost:3306/test1?serverTimezone=UTC
     username: 'root'
     password: '123456'
-  Security:
-    user:
-      name: 1
-      password: 1
+  mybatis-plus:
+    configuration:
+      # 启用分页插件
+      plugins:
+        - com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor
