@@ -30,25 +30,39 @@ public class UserController {
 	@Autowired
 	private LoginHelper loginHelper;
 
-	@GetMapping("/list")
-	public Result getUserList(User user, PageQuery pageQuery){
-		System.out.println("id:"+user.getUserId());
-		System.out.println("user:"+user.getUserName());
-		return Result.success(userService.getUserList(user,pageQuery),"查询成功");
+	/**
+	 * 获取用户列表
+	 *
+	 * @param user      用户
+	 * @param pageQuery 页面查询
+	 * @return {@link Result }
+	 */
+	@PostMapping("/list")
+	public Result getUserList(@RequestBody User user, PageQuery pageQuery) {
+		return Result.success(userService.getUserList(user, pageQuery), "查询成功");
 	}
 
-
-	// 删除用户
-	@DeleteMapping("/delete")
-	public Result deleteUser(Integer id) {
-		boolean flag = userService.deleteById(id);
-		if (!flag) {
-			return Result.error("删除失败");
+	/**
+	 * 按用户id获取
+	 *
+	 * @param userId 用户id
+	 * @return {@link Result }
+	 */
+	@GetMapping("/getByUserId")
+	public Result getByUserId(@RequestParam int userId) {
+		User user = userService.getByUserId(userId);
+		if (user == null) {
+			return Result.error("该用户不存在");
 		}
-		return Result.success("删除成功");
+		return Result.success(user, "查询成功");
 	}
 
-	// 更新用户
+	/**
+	 * 更新用户
+	 *
+	 * @param user 用户
+	 * @return {@link Result }
+	 */
 	@PutMapping("/update")
 	public Result updateUser(@RequestBody User user) {
 		boolean flag = userService.updateById(user);
@@ -58,26 +72,45 @@ public class UserController {
 		return Result.success("更新成功");
 	}
 
-	// 查询所有用户
-	@GetMapping("/getAll")
-	public Result getAllUsers() {
-		List<User> users = userService.list();
-		if (users.isEmpty()) {
-			return Result.error("无用户");
+
+	/**
+	 * 删除用户
+	 *
+	 * @param id 身份证件
+	 * @return {@link Result }
+	 */
+	@DeleteMapping("/delete")
+	public Result deleteUser(Integer id) {
+		boolean flag = userService.deleteById(id);
+		if (!flag) {
+			return Result.error("删除失败");
 		}
-		return Result.success(users, "查询成功");
+		return Result.success("删除成功");
 	}
 
-	// 根据 ID 查询用户
-	@GetMapping("/getId")
-	public Result getUserById(Integer id) {
-		User user = userService.getUserId(id);
-		if (user == null) {
-			return Result.error("该用户不存在");
+	/**
+	 * 登录
+	 *
+	 * @param userRequest 用户请求
+	 * @return {@link Result }
+	 */
+	@PostMapping("/login")
+	public Result login(@RequestBody User userRequest) {
+		String username = userRequest.getUserName();
+		String password = userRequest.getPassword();
+		String token = userService.login(username, password);
+		if (token == null) {
+			return Result.error("用户名或密码错误");
 		}
-		return Result.success(user, "查询成功");
+		return Result.success(token, "登陆成功");
 	}
 
+	/**
+	 * 登记
+	 *
+	 * @param userRequest 用户请求
+	 * @return {@link Result }
+	 */
 	@PostMapping("/register")
 	public Result register(@RequestBody User userRequest) {
 		String username = userRequest.getUserName();
@@ -89,16 +122,5 @@ public class UserController {
 		} else {
 			return Result.error("用户名已存在");
 		}
-	}
-
-	@PostMapping("/login")
-	public Result login(@RequestBody User userRequest) {
-		String username = userRequest.getUserName();
-		String password = userRequest.getPassword();
-		String token = userService.login(username, password);
-		if (token == null) {
-			return Result.error("用户名或密码错误");
-		}
-		return Result.success(token, "登陆成功");
 	}
 }

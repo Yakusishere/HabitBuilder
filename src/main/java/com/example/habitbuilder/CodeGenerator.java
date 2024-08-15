@@ -15,7 +15,7 @@ public class CodeGenerator {
         FastAutoGenerator.create("jdbc:mysql://localhost:3306/test1?serverTimezone=UTC", "root", "123456")
                 .globalConfig(builder -> {
                     builder.author("实训小组") // 设置作者
-                            .outputDir("C:\\Users\\黄俊翔\\IdeaProjects\\HabitBuilder\\src\\main\\java")// 输出目录
+                            .outputDir("D:\\HabitBuilder-final\\HabitBuilder-final\\HabitBuilder\\src\\main\\java")// 输出目录
                             .dateType(DateType.TIME_PACK)
                             .enableSwagger(); //时间戳样式 全部时间
                 })
@@ -28,7 +28,7 @@ public class CodeGenerator {
                             .xml("mappers"); // 设置 Mapper XML 文件包名
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("comment", "event", "manager", "plan", "post", "relation", "user","conversation","historyconversation","likepost","likecomments","collectpost","followuser") // 设置需要生成的表名
+                    builder.addInclude("reply") // 设置需要生成的表名
                             .entityBuilder()
                             .enableLombok() // 启用 Lombok
                             .enableTableFieldAnnotation() // 启用字段注解

@@ -100,7 +100,7 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
         wrapper.eq("userId", userId);
         List<Plan>plans=planMapper.selectList(wrapper);
         boolean flag=true;
-        User user= userServiceImpl.getUserId(userId);
+        User user= userServiceImpl.getByUserId(userId);
         for (int i = 0; i < plans.size(); i++) {
             Plan plan= plans.get(i);
             System.out.println(plan.getPlanId());

@@ -7,7 +7,6 @@ import com.example.habitbuilder.service.IConversationService;
 import com.example.habitbuilder.service.IHistoryConversationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;

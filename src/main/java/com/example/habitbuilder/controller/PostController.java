@@ -1,5 +1,6 @@
 package com.example.habitbuilder.controller;
 
+import com.example.habitbuilder.domain.PageQuery;
 import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.service.IPostService;
@@ -35,8 +36,8 @@ public class PostController {
      * @return {@link List }<{@link Post }>
      */
     @GetMapping("/list")
-    public Result getAllPosts(){
-        return Result.success(postService.getAllPost(),"获取所有帖子成功");
+    public Result getPostList(@RequestBody Post post, PageQuery pageQuery){
+        return Result.success(postService.getPostList(post,pageQuery),"获取所有帖子成功");
     }
 
     /**

@@ -20,6 +20,8 @@ public interface IUserService extends IService<User> {
 
     List<User> getUserList(User user, PageQuery pageQuery);
 
+    User getByUserId(int userId);
+
     User findByUserId(int userId);
 
     //根据用户名查找用户
@@ -34,5 +36,5 @@ public interface IUserService extends IService<User> {
 
     boolean deleteById(Integer id);
 
-    User getUserId(Integer id);
+
 }

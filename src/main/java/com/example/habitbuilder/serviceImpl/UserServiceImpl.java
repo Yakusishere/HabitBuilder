@@ -45,17 +45,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 	}
 
 	@Override
+	public User getByUserId(int userId) {
+		return userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserId,userId));
+	}
+
+	@Override
 	public User findByUserId(int userId) {
-		LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
-		System.out.println("FindByUserId:" + userId);
-		lqw.eq(User::getUserId, userId);
-		User user = userMapper.selectOne(lqw);
-		if (user == null) {
-			System.out.println("User not found");
-		}else{
-			System.out.println("Found User");
-		}
-		return user;
+		return userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserId,userId));
 	}
 
 	@Override
@@ -102,12 +98,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 		return true;
 	}
 
-	@Override
-	public User getUserId(Integer id) {
-		QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-		queryWrapper.eq("userId", id);
-		return userMapper.selectOne(queryWrapper);
-	}
+
 
 	/*private LambdaQueryWrapper<UserVo> buildlqw(UserBo bo){
 		LambdaQueryWrapper<UserVo> lqw = new LambdaQueryWrapper<>();
