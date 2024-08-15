@@ -38,7 +38,7 @@ public class LikecommentsController {
 
     @PostMapping("/getIfLikeComment")
     public Result getIfLikeComment(int userId,int commentId) {
-        return Result.success(likeCommentsService.getIfLikeComment(userId,commentId));
+        return Result.success(likeCommentsService.getIfLikeComment(userId,commentId).toString(),"获取是否点赞成功");
     }
 
     @GetMapping("/getLikeComment")

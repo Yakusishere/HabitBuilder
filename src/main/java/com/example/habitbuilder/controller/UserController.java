@@ -48,13 +48,18 @@ public class UserController {
 	 * @param userId 用户id
 	 * @return {@link Result }
 	 */
-	@GetMapping("/getByUserId")
-	public Result getByUserId(@RequestParam int userId) {
+	@GetMapping("/getByUserId/{userId}")
+	public Result getByUserId(@PathVariable(value = "userId") Integer userId) {
 		User user = userService.getByUserId(userId);
 		if (user == null) {
 			return Result.error("该用户不存在");
 		}
 		return Result.success(user, "查询成功");
+	}
+
+	@PostMapping("/search")
+	public Result searchUser(@RequestBody User user){
+		return Result.success(userService.searchUser(user),"查询成功");
 	}
 
 	/**
@@ -64,9 +69,8 @@ public class UserController {
 	 * @return {@link Result }
 	 */
 	@PutMapping("/update")
-	public Result updateUser(@RequestBody User user) {
-		boolean flag = userService.updateById(user);
-		if (!flag) {
+	public Result updateUser(@RequestHeader("Authorization") String token, @RequestBody User user) {
+		if (!userService.updateUser(token, user)) {
 			return Result.error("更新失败");
 		}
 		return Result.success("更新成功");
@@ -76,13 +80,13 @@ public class UserController {
 	/**
 	 * 删除用户
 	 *
-	 * @param id 身份证件
+	 * @param token  令牌
+	 * @param userId 用户id
 	 * @return {@link Result }
 	 */
-	@DeleteMapping("/delete")
-	public Result deleteUser(Integer id) {
-		boolean flag = userService.deleteById(id);
-		if (!flag) {
+	@DeleteMapping("/delete/{userId}")
+	public Result deleteUser(@RequestHeader("Authorization") String token, @PathVariable("userId") Integer userId) {
+		if (!userService.deleteById(token, userId)) {
 			return Result.error("删除失败");
 		}
 		return Result.success("删除成功");

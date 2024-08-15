@@ -34,10 +34,4 @@ public class Followuser implements Serializable {
 
     @TableField("receiveUserId")
     private Integer receiveUserId;
-
-    @TableField("ImageStr")
-    private String imageStr;
-
-    @TableField("isRead")
-    private Boolean isRead;
 }

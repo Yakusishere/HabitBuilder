@@ -3,7 +3,7 @@ package com.example.habitbuilder.controller;
 import com.example.habitbuilder.pojo.Comment;
 import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.pojo.Result;
-import com.example.habitbuilder.serviceImpl.CommentServiceImpl;
+import com.example.habitbuilder.service.ICommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author 实训小组
@@ -20,35 +20,29 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/comment")
 public class CommentController {
-    @Autowired
-    CommentServiceImpl commentService;
+	@Autowired
+	ICommentService commentService;
 
-    @PostMapping("/replyComment")
-    public Result replyComment(@RequestBody Comment comment) {
-        comment.setCommentDate(LocalDate.now());
-        commentService.addReplyComment(comment);
-        return Result.success("回复成功"); //这里的commentCount 可以从前面获得
-    }
+	@GetMapping("/listByUserId")
+	public Result listByUserId(@RequestHeader("Authorization") String token) {
+		return Result.success(commentService.listByUserId(token), "获取用户评论列表成功");
+	}
 
-    @PostMapping("/commentPost")
-    public Result commentPost(@RequestBody Comment comment) {
-        comment.setCommentDate(LocalDate.now());
-        commentService.addComment(comment);
-        return Result.success("评论成功"); // 这里的commentCount先获取表中这个值的最大值
-    }
+	@GetMapping("/getPostCommentSection")
+	public Result listByPostId(@RequestParam int postId) {
+		return Result.success(commentService.getPostCommentSection(postId), "获取该帖子评论区成功");
+	}
 
-    @DeleteMapping("/deleteComment")
-    public Result deleteComment(int commentId) {
-        commentService.deleteComment(commentId);
-        return Result.success("成功删除评论");
-    }
+	@PostMapping("/add")
+	public Result addComment(Comment comment){
+		comment.setCommentDate(LocalDate.now());
+		commentService.addComment(comment);
+		return Result.success("评论成功");
+	}
 
-    //查看这个帖子的所有评论
-    @GetMapping("/getThisPostComments")
-    public Result getThisPostComments(int postId) {
-        return Result.success(commentService.getThisPostComments(postId),"获取该帖子评论列表成功");
-    }
-
-
-
+	@DeleteMapping("/deleteComment")
+	public Result deleteComment(@RequestParam int commentId) {
+		commentService.deleteComment(commentId);
+		return Result.success("成功删除评论");
+	}
 }

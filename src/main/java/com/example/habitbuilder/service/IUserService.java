@@ -2,6 +2,7 @@ package com.example.habitbuilder.service;
 
 import com.example.habitbuilder.domain.PageQuery;
 import com.example.habitbuilder.domain.bo.UserBo;
+import com.example.habitbuilder.domain.vo.UserVo;
 import com.example.habitbuilder.pojo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,9 @@ public interface IUserService extends IService<User> {
 
     User getByUserId(int userId);
 
-    User findByUserId(int userId);
+    List<User> searchUser(User user);
+
+    Boolean updateUser(String token, User user);
 
     //根据用户名查找用户
     boolean findByUserName(String username);
@@ -34,7 +37,7 @@ public interface IUserService extends IService<User> {
 
     void changeScore(int userId);
 
-    boolean deleteById(Integer id);
+    boolean deleteById(String token ,int userId);
 
-
+    public UserVo ConvertToUserVo(User user);
 }

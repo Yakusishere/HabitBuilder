@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.habitbuilder.mapper.BrowsepostMapper">
+
+	<resultMap id="BrowseHistoryVoMap" type="com.example.habitbuilder.domain.vo.BrowseHistoryVo">
+		<result property="title" column="title"/>
+		<result property="nickName" column="nickName"/>
+		<result property="image" column="image"/>
+		<result property="avatarImg" column="avatarImg"/>
+		<result property="browseTime" column="browseTime"/>
+	</resultMap>
+
+	<!--
+		使用 JOIN 语句实现联表查询，并将结果映射到 BrowseHistoryVo 对象中
+	-->
+	<select id="selectBrowseList" resultMap="BrowseHistoryVoMap">
+		SELECT p.title      AS title,
+		       u.nickName   AS nickName,
+		       p.image      AS image,
+		       u.avatarImg  AS avatarImg,
+		       bp.startTime AS browseTime
+		FROM browsePost bp
+			     JOIN post p ON bp.postId = p.id
+			     JOIN uesr u ON bp.userId = u.userId
+		WHERE bp.userId = #{userId}
+		ORDER BY bp.startTime DESC
+	</select>
+
+</mapper>

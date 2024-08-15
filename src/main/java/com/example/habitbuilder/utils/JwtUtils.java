@@ -1,5 +1,6 @@
 package com.example.habitbuilder.utils;
 
+import com.example.habitbuilder.mapper.UserMapper;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IUserService;
 import io.jsonwebtoken.*;
@@ -12,16 +13,16 @@ import java.util.Map;
 
 @Component
 public class JwtUtils {
-	@Autowired
-	private IUserService userService;
 	/**
-	 * 过期时间60分钟
+	 * 过期时间24小时
 	 */
-	private static final long EXPIRE_TIME = 60 * 60 * 1000;
+	private static final long EXPIRE_TIME = 24 * 60 * 60 * 1000;
 	/**
 	 * 加密密钥
 	 */
 	private static final String KEY = "liuhongfei";
+	@Autowired
+	private UserMapper userMapper;
 
 	/**
 	 * 生成token
@@ -64,7 +65,7 @@ public class JwtUtils {
 		}
 		//从token中获取用户id，查询该Id的用户是否存在，存在则token验证通过
 		String id = claims.getId();
-		User user = userService.findByUserId(Integer.parseInt(id));
+		User user = userMapper.selectById(id);
 		if (user == null) {
 			return 1;
 		} else {

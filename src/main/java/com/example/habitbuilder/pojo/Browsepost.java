@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -17,34 +17,32 @@ import lombok.Setter;
  * </p>
  *
  * @author 实训小组
- * @since 2024-08-15
+ * @since 2024-08-30
  */
 @Getter
 @Setter
-@TableName("reply")
-@ApiModel(value = "Reply对象", description = "")
-public class Reply implements Serializable {
+@TableName("browsepost")
+@ApiModel(value = "Browsepost对象", description = "")
+public class Browsepost implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "replyId", type = IdType.AUTO)
-    private Integer replyId;
-
-    @TableField("commentId")
-    private Integer commentId;
-
-    @TableField("replyToId")
-    private Integer replyToId;
+    @TableId(value = "browse_post_id", type = IdType.AUTO)
+    private Integer browsePostId;
 
     @TableField("userId")
     private Integer userId;
 
-    @TableField("content")
-    private String content;
+    @TableField("postId")
+    private Integer postId;
 
-    @TableField("replyDate")
-    private LocalDate replyDate;
+    @TableField("start_time")
+    private LocalDateTime startTime;
 
-    @TableField("likeCount")
-    private Integer likeCount;
+    @TableField("end_time")
+    private LocalDateTime endTime;
+
+    @ApiModelProperty("单位：秒")
+    @TableField("browse_time")
+    private Integer browseTime;
 }

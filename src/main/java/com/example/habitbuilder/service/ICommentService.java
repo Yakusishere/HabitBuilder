@@ -16,11 +16,11 @@ import java.util.List;
  */
 public interface ICommentService extends IService<Comment> {
 
+    List<CommentVo> getPostCommentSection(int postId);
+
+    List<CommentVo> listByUserId(String token);
+
     void addComment(Comment comment);
-
-    void addReplyComment(Comment comment);
-
-    List<Comment[]> getThisPostComments(int postId);
 
     void deleteComment(int commentId);
 

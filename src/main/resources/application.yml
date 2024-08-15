@@ -8,6 +8,5 @@ spring:
     password: '123456'
   mybatis-plus:
     configuration:
-      # 启用分页插件
       plugins:
         - com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor

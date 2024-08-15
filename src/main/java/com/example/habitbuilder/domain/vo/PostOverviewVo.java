@@ -23,5 +23,7 @@ public class PostOverviewVo {
 
 	private Integer likeCount;
 
+	private Integer favCount;
+
 	private String OverviewImage;
 }

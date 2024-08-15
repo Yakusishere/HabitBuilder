@@ -18,7 +18,7 @@ public interface ILikecommentsService extends IService<Likecomments> {
 
     void deleteLikeComment(int commentId,int userId);
 
-    String getIfLikeComment(int userId, int commentId);
+    Boolean getIfLikeComment(int userId, int commentId);
 
     List<Likecomments> getLikeComment(int userId);
 

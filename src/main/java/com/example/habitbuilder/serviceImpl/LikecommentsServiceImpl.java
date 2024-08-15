@@ -52,15 +52,11 @@ public class LikecommentsServiceImpl extends ServiceImpl<LikecommentsMapper, Lik
         commentMapper.updateById(comment);
     }
 
-    public String getIfLikeComment(int userId, int commentId) {
+    public Boolean getIfLikeComment(int userId, int commentId) {
         QueryWrapper<Likecomments> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userId", userId);
         queryWrapper.eq("commentId", commentId);
-        if(!likecommentsMapper.selectList(queryWrapper).isEmpty()){
-            return "true";
-        }else{
-            return "false";
-        }
+	    return !likecommentsMapper.selectList(queryWrapper).isEmpty();
     }
 
 

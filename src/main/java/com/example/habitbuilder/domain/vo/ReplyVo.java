@@ -28,7 +28,7 @@ public class ReplyVo {
 
 	private String receiveNickName;
 
-	private LocalDate commentDate;
+	private LocalDate replyDate;
 
 	private Integer likeCount;
 

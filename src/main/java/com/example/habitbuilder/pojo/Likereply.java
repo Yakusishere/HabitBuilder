@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -21,30 +21,21 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("reply")
-@ApiModel(value = "Reply对象", description = "")
-public class Reply implements Serializable {
+@TableName("likereply")
+@ApiModel(value = "Likereply对象", description = "")
+public class Likereply implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "replyId", type = IdType.AUTO)
-    private Integer replyId;
-
-    @TableField("commentId")
-    private Integer commentId;
-
-    @TableField("replyToId")
-    private Integer replyToId;
+    @TableId(value = "likeReplyId", type = IdType.AUTO)
+    private Integer likeReplyId;
 
     @TableField("userId")
     private Integer userId;
 
-    @TableField("content")
-    private String content;
+    @TableField("replyId")
+    private Integer replyId;
 
-    @TableField("replyDate")
-    private LocalDate replyDate;
-
-    @TableField("likeCount")
-    private Integer likeCount;
+    @TableField("createTime")
+    private LocalDateTime createTime;
 }

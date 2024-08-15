@@ -4,7 +4,6 @@ import com.example.habitbuilder.domain.PageQuery;
 import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.service.IPostService;
-import com.example.habitbuilder.utils.AliOSSUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,8 +26,8 @@ public class PostController {
     @Autowired
     IPostService postService;
 
-    @Autowired
-    private AliOSSUtils aliOSSUtils;
+    /*@Autowired
+    private AliOSSUtils aliOSSUtils;*/
 
     /**
      * 获取所有帖子
@@ -47,8 +46,8 @@ public class PostController {
      * @param postId 帖子id
      * @return {@link Result }
      */
-    @GetMapping("/browsePost")
-    public Result browsePost(@RequestHeader("Authorization")String token, @RequestParam int postId){
+    @GetMapping("/browsePost/{postId}")
+    public Result browsePost(@RequestHeader("Authorization")String token, @PathVariable("postId") int postId){
         return Result.success(postService.browsePost(token,postId),"获取帖子详情成功");
     }
 

@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.habitbuilder.domain.PageQuery;
+import com.example.habitbuilder.domain.vo.UserVo;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.mapper.UserMapper;
 import com.example.habitbuilder.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.habitbuilder.utils.JwtUtils;
+import com.example.habitbuilder.utils.LoginHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +32,11 @@ import java.util.Objects;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 	@Autowired
 	private UserMapper userMapper;
+	@Autowired
+	private LoginHelper loginHelper;
 
 	@Override
-	public List<User> getUserList(User user, PageQuery pageQuery){
+	public List<User> getUserList(User user, PageQuery pageQuery) {
 		// 创建查询条件
 		LambdaQueryWrapper<User> lqw = Wrappers.lambdaQuery();
 		lqw.eq(user.getUserId() != null, User::getUserId, user.getUserId());
@@ -46,12 +50,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
 	@Override
 	public User getByUserId(int userId) {
-		return userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserId,userId));
+		return userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserId, userId));
 	}
 
 	@Override
-	public User findByUserId(int userId) {
-		return userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserId,userId));
+	public List<User> searchUser(User user) {
+		LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
+		lqw.eq(user.getUserName() != null, User::getUserName, user.getUserName());
+		lqw.like(user.getNickName() != null, User::getNickName, user.getNickName());
+		return userMapper.selectList(lqw);
+	}
+
+	@Override
+	public Boolean updateUser(String token, User user) {
+		int userId = loginHelper.getUserId(token);
+		User user1 = userMapper.selectOne(new LambdaQueryWrapper<User>()
+				.eq(User::getUserName, user.getUserName()));
+		if (user1.getUserId() != userId) {
+			return false;
+		}
+		user.setUserId(userId);
+		userMapper.updateById(user);
+		return true;
 	}
 
 	@Override
@@ -93,12 +113,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 	}
 
 	@Override
-	public boolean deleteById(Integer id) {
-		userMapper.deleteById(id);
-		return true;
+	public boolean deleteById(String token, int userId) {
+		int myUserId = loginHelper.getUserId(token);
+		if (myUserId == userId) {
+			userMapper.deleteById(userId);
+			return true;
+		}
+		return false;
 	}
 
-
+	public UserVo ConvertToUserVo(User user) {
+		UserVo vo = new UserVo();
+		vo.setUserId(user.getUserId());
+		vo.setUserName(user.getUserName());
+		vo.setNickName(user.getNickName());
+		vo.setPassword(user.getPassword());
+		vo.setAvatarImg(user.getAvatarImg());
+		vo.setMyScore(user.getMyScore());
+		vo.setRegisterTime(user.getRegisterTime());
+		return vo;
+	}
 
 	/*private LambdaQueryWrapper<UserVo> buildlqw(UserBo bo){
 		LambdaQueryWrapper<UserVo> lqw = new LambdaQueryWrapper<>();
