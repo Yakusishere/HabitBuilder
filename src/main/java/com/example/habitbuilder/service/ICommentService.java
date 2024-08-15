@@ -1,5 +1,6 @@
 package com.example.habitbuilder.service;
 
+import com.example.habitbuilder.domain.vo.CommentVo;
 import com.example.habitbuilder.pojo.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -22,4 +23,6 @@ public interface ICommentService extends IService<Comment> {
     List<Comment[]> getThisPostComments(int postId);
 
     void deleteComment(int commentId);
+
+    CommentVo ConvertToCommentVo(int userId, Comment comment);
 }

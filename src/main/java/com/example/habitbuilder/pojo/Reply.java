@@ -17,34 +17,34 @@ import lombok.Setter;
  * </p>
  *
  * @author 实训小组
- * @since 2024-07-03
+ * @since 2024-08-15
  */
 @Getter
 @Setter
-@TableName("comment")
-@ApiModel(value = "Comment对象", description = "")
-public class Comment implements Serializable {
+@TableName("reply")
+@ApiModel(value = "Reply对象", description = "")
+public class Reply implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "commentId", type = IdType.AUTO)
+    @TableId(value = "replyId", type = IdType.AUTO)
+    private Integer replyId;
+
+    @TableField("commentId")
     private Integer commentId;
 
-    @TableField("postId")
-    private Integer postId;
-
-    @TableField("content")
-    private String content;
+    @TableField("replyToId")
+    private Integer replyToId;
 
     @TableField("userId")
     private Integer userId;
+
+    @TableField("content")
+    private String content;
 
     @TableField("commentDate")
     private LocalDate commentDate;
 
     @TableField("likeCount")
     private Integer likeCount;
-
-    @TableField("replyCount")
-    private Integer replyCount;
 }

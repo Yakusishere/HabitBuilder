@@ -106,7 +106,7 @@ public class UserController {
 	}
 
 	/**
-	 * 登记
+	 * 注册
 	 *
 	 * @param userRequest 用户请求
 	 * @return {@link Result }

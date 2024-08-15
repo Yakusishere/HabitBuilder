@@ -29,6 +29,10 @@ public class PostVo {
 
 	private Integer commentCount;
 
+	private Boolean isLiked;
+
+	private Boolean isFav;
+
 	private List<String> images;
 
 	private List<CommentVo> commentVoList;

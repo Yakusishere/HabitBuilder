@@ -1,6 +1,7 @@
 package com.example.habitbuilder.service;
 
 import com.example.habitbuilder.domain.PageQuery;
+import com.example.habitbuilder.domain.vo.PostOverviewVo;
 import com.example.habitbuilder.domain.vo.PostVo;
 import com.example.habitbuilder.pojo.Post;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -17,13 +18,15 @@ import java.util.List;
  */
 public interface IPostService extends IService<Post> {
 
-    List<PostVo> getPostList(Post post, PageQuery pageQuery);
+    List<PostOverviewVo> getPostList(Post post, PageQuery pageQuery);
 
-    void addPost(Post post);
+    PostVo browsePost(String token, int postId);
+
+    void addPost(String token, Post post);
 
     void deletePost(int postId);
 
-    void updatePost(Post post);
+    void updatePost(String token, Post post);
 
     List<Post> searchPost(String title);
 

@@ -35,9 +35,47 @@ public class PostController {
      *
      * @return {@link List }<{@link Post }>
      */
-    @GetMapping("/list")
+    @PostMapping("/list")
     public Result getPostList(@RequestBody Post post, PageQuery pageQuery){
         return Result.success(postService.getPostList(post,pageQuery),"获取所有帖子成功");
+    }
+
+    /**
+     * 浏览帖子
+     *
+     * @param token  令牌
+     * @param postId 帖子id
+     * @return {@link Result }
+     */
+    @GetMapping("/browsePost")
+    public Result browsePost(@RequestHeader("Authorization")String token, @RequestParam int postId){
+        return Result.success(postService.browsePost(token,postId),"获取帖子详情成功");
+    }
+
+    /**
+     * 添加帖子
+     *
+     * @param token 令牌
+     * @param post  帖子
+     * @return {@link Result }
+     */
+    @PostMapping("/add")
+    public Result addPost(@RequestHeader("Authorization") String token, @RequestBody Post post){
+        postService.addPost(token,post);
+        return Result.success("添加帖子成功");
+    }
+
+    /**
+     * 更新帖子
+     *
+     * @param token 令牌
+     * @param post  帖子
+     * @return {@link Result }
+     */
+    @PutMapping("/update")
+    public Result updatePost(@RequestHeader("Authorization")String token, @RequestBody Post post){
+        postService.updatePost(token,post);
+        return Result.success("更新帖子成功");
     }
 
     /**
@@ -57,18 +95,6 @@ public class PostController {
         String url = aliOSSUtils.upload(image);
         return Result.success(url, "上传成功");
     }*/
-    @PostMapping("/createPost")
-    public Result createPost(@RequestBody Post post) {
-        post.setPublishDate(LocalDate.now());
-        postService.addPost(post);
-        return Result.success("创建帖子成功");
-    }
-
-    @PutMapping("/updatePost")
-    public Result updatePost(@RequestBody Post post) {
-        postService.updatePost(post);
-        return Result.success("更新帖子成功");
-    }
 
     @GetMapping("/searchPost")
     public Result searchPost(String title){

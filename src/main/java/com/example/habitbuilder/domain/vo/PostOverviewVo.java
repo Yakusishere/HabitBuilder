@@ -6,12 +6,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class CommentVo {
-	private Integer commentId;
-
+public class PostOverviewVo {
 	private Integer postId;
-
-	private String content;
 
 	private Integer userId;
 
@@ -19,13 +15,13 @@ public class CommentVo {
 
 	private String avatarImg;
 
-	private LocalDate commentDate;
+	private Boolean isViewable;
+
+	private String title;
+
+	private LocalDate publishDate;
 
 	private Integer likeCount;
 
-	private Integer replyCount;
-
-	private Boolean isLiked;
-
-	private List<ReplyVo> replyVoList;
+	private String OverviewImage;
 }
