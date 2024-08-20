@@ -117,8 +117,11 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
 		vo.setTitle(post.getTitle());
 		vo.setPublishDate(post.getPublishDate());
 		vo.setLikeCount(post.getLikeCount());
-		String[] urls = post.getImage().split(",");
-		String firstUrl = urls.length > 0 ? urls[0] : post.getImage();
+		String firstUrl = "";
+		if(post.getImage()!=null){
+			String[] urls = post.getImage().split(",");
+			firstUrl = urls[0];
+		}
 		vo.setOverviewImage(firstUrl);
 		return vo;
 	}

@@ -56,7 +56,4 @@ public class Post implements Serializable {
 
     @TableField("image")
     private String image;
-
-    @TableField("userName")
-    private String userName;
 }
