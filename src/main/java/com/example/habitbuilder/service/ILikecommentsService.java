@@ -7,20 +7,18 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author 实训小组
  * @since 2024-07-06
  */
 public interface ILikecommentsService extends IService<Likecomments> {
-    void addLikeComment(Likecomments likecomments);
+	Boolean addLikeComment(String token, int commentId);
 
-    void deleteLikeComment(int commentId,int userId);
+	Boolean deleteLikeComment(String token, int commentId);
 
-    Boolean getIfLikeComment(int userId, int commentId);
+	Boolean getIfLikeComment(int userId, int commentId);
 
-    List<Likecomments> getLikeComment(int userId);
-
-    boolean isDuplicateLikeComment(int commentId, int userId);
+	List<Likecomments> getLikeComment(String token);
 }

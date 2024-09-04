@@ -20,7 +20,7 @@ public interface ICommentService extends IService<Comment> {
 
     List<CommentVo> listByUserId(String token);
 
-    void addComment(Comment comment);
+    CommentVo addComment(String token,Comment comment);
 
     void deleteComment(int commentId);
 

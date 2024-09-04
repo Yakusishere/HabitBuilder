@@ -34,10 +34,8 @@ public class CommentController {
 	}
 
 	@PostMapping("/add")
-	public Result addComment(Comment comment){
-		comment.setCommentDate(LocalDate.now());
-		commentService.addComment(comment);
-		return Result.success("评论成功");
+	public Result addComment(@RequestHeader("Authorization") String token, @RequestBody Comment comment) {
+		return Result.success(commentService.addComment(token, comment), "评论成功");
 	}
 
 	@DeleteMapping("/deleteComment")

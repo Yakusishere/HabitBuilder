@@ -4,6 +4,7 @@ import com.example.habitbuilder.pojo.Likepost;
 import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.serviceImpl.LikepostServiceImpl;
+import com.example.habitbuilder.utils.LoginHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author 实训小组
@@ -20,44 +21,45 @@ import java.util.List;
 @RestController
 @RequestMapping("/likepost")
 public class LikepostController {
-    @Autowired
-    LikepostServiceImpl likepostService;
+/*	@Autowired
+	LoginHelper loginHelper;*/
+	@Autowired
+	LikepostServiceImpl likepostService;
 
-    @PostMapping("/addLikePost")
-    public Result addLikePost(@RequestBody Likepost likepost) {
-        boolean isDuplicate = likepostService.isDuplicateLikePost(likepost.getPostId(), likepost.getUserId());
-        if (isDuplicate) {
-            return Result.error("重复点赞");
-        }
-        likepostService.addLikePost(likepost);
-        return Result.success("点赞帖子成功");
-    }
+	@PostMapping("/add/{postId}")
+	public Result addLikePost(@RequestHeader("Authorization") String token,@PathVariable int postId) {
+		if (!likepostService.likePost(token, postId)) {
+			return Result.error("重复点赞");
+		}
+		return Result.success("点赞帖子成功");
+	}
 
-    @DeleteMapping("/deleteLikePost")
-    public Result deleteLikePost(int postId,int userId) {
-        likepostService.deleteLikePost(postId,userId);
-        return Result.success("取消帖子点赞成功");
-    }
+	@DeleteMapping("/deleteLikePost/{postId}")
+	public Result deleteLikePost(@RequestHeader("Authorization") String token, @PathVariable int postId) {
+		if (!likepostService.deleteLikePost(token, postId)) {
+			return Result.error("用户未点赞过此帖子");
+		}
+		return Result.success("取消帖子点赞成功");
+	}
 
-    @GetMapping("/getLikePosts")
-    public Result getLikePosts(int userId) {
+/*	@GetMapping("/getLikePosts")
+	public Result getLikePosts(@RequestHeader String token) {
+		int userId = loginHelper.getUserId(token);
+		return Result.success(likepostService.getLikePosts(userId), "获取喜欢列表成功");
+	}
 
-        return Result.success(likepostService.getLikePosts(userId),"获取喜欢列表成功");
+	@GetMapping("/getIfLikePost/{postId}")
+	public Result getIfLikePost(@RequestHeader String token, @PathVariable int postId) {
+		return Result.success(likepostService.getIfLikePost(loginHelper.getUserId(token), postId));
+	}
 
-    }
-
-    @PostMapping("/getIfLikePost")
-    public Result getIfLikePost(int userId,int postId) {
-        return Result.success(likepostService.getIfLikePost(userId,postId));
-    }
-
-    @GetMapping("/getLikePostByUserId")
-    public Result getLikePostByUserId(int userId){
-        List<Post>posts=likepostService.getLikePostByUserId(userId);
-        if(posts.isEmpty()){
-            return Result.error("无点赞过的帖子");
-        }else {
-            return Result.success(posts,"获取成功");
-        }
-    }
+	@GetMapping("/getLikePostByUserId")
+	public Result getLikePostByUserId(@RequestHeader String token) {
+		List<Post> posts = likepostService.getLikePostByUserId(loginHelper.getUserId(token));
+		if (posts.isEmpty()) {
+			return Result.error("无点赞过的帖子");
+		} else {
+			return Result.success(posts, "获取成功");
+		}
+	}*/
 }

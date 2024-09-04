@@ -15,15 +15,13 @@ import java.util.List;
  * @since 2024-07-06
  */
 public interface ILikepostService extends IService<Likepost> {
-    void addLikePost(Likepost likepost);
+    Boolean likePost(String token, int postId);
 
-    void deleteLikePost(int postId,int userId);
+    Boolean deleteLikePost(String token, int postId);
 
     List<Likepost> getLikePosts(int userId);
 
     String getIfLikePost(int userId, int postId);
-
-    boolean isDuplicateLikePost(int postId, int userId);
 
     List<Post> getLikePostByUserId(int userId);
 }

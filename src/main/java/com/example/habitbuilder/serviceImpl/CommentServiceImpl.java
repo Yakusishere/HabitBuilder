@@ -14,6 +14,8 @@ import com.example.habitbuilder.utils.LoginHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +54,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 	public List<CommentVo> getPostCommentSection(int postId) {
 		List<Comment> commentList = commentMapper.selectList(new LambdaQueryWrapper<Comment>().eq(Comment::getPostId, postId));
 		List<CommentVo> commentVoList = new ArrayList<>();
-		for (Comment comment:commentList){
-			commentVoList.add(ConvertToCommentVo(comment.getUserId(),comment));
+		for (Comment comment : commentList) {
+			commentVoList.add(ConvertToCommentVo(comment.getUserId(), comment));
 		}
 		return commentVoList;
 	}
@@ -70,8 +72,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 	}
 
 	@Override
-	public void addComment(Comment comment) {
+	public CommentVo addComment(String token, Comment comment) {
+		comment.setUserId(loginHelper.getUserId(token));
+		comment.setCommentDate(LocalDate.now());
+		comment.setPublishTime(LocalDateTime.now());
 		commentMapper.insert(comment);
+		Comment tmp = commentMapper.selectOne(new LambdaQueryWrapper<Comment>()
+				.eq(Comment::getPublishTime, comment.getPublishTime()));
+		return ConvertToCommentVo(tmp.getUserId(), comment);
 	}
 
 	@Override
@@ -92,7 +100,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 		vo.setCommentDate(comment.getCommentDate());
 		vo.setLikeCount(comment.getLikeCount());
 		vo.setReplyCount(comment.getReplyCount());
-		vo.setIsLiked(likecommentsService.getIfLikeComment(userId,comment.getCommentId()));
+		vo.setIsLiked(likecommentsService.getIfLikeComment(userId, comment.getCommentId()));
 		List<Reply> replyList = replyMapper.selectList(new LambdaQueryWrapper<Reply>().eq(Reply::getCommentId, comment.getCommentId()));
 		List<ReplyVo> replyVoList = new ArrayList<>();
 		for (Reply reply : replyList) {

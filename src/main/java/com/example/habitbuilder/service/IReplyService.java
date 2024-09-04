@@ -17,7 +17,7 @@ import java.util.List;
 public interface IReplyService extends IService<Reply> {
 	List<ReplyVo> getReplyConversation(int replyId);
 
-	void addReply(String token, Reply reply);
+	ReplyVo addReply(String token, Reply reply);
 
 	Boolean updateReply(String token, Reply reply);
 

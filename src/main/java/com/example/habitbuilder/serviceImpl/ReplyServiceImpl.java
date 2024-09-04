@@ -17,6 +17,8 @@ import com.example.habitbuilder.utils.LoginHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -45,42 +47,48 @@ public class ReplyServiceImpl extends ServiceImpl<ReplyMapper, Reply> implements
 	@Override
 	public List<ReplyVo> getReplyConversation(int replyId) {
 		Reply rootReply = replyMapper.selectById(replyId);
-		while (rootReply.getReplyToId()!=null){
+		while (rootReply.getReplyToId() != null) {
 			rootReply = replyMapper.selectById(rootReply.getReplyToId());
 		}
 		List<Reply> list = getRecursiveReplies(rootReply);
 		List<ReplyVo> replyVoList = new ArrayList<>();
-		for(Reply reply:list){
-			replyVoList.add(convertToReplyVo(reply.getUserId(),reply));
+		for (Reply reply : list) {
+			replyVoList.add(convertToReplyVo(reply.getUserId(), reply));
 		}
 		return replyVoList;
 	}
 
-	private List<Reply> getRecursiveReplies(Reply reply){
+	private List<Reply> getRecursiveReplies(Reply reply) {
 		List<Reply> list = replyMapper.selectList(new LambdaQueryWrapper<Reply>()
-				.eq(Reply::getReplyToId,reply.getReplyId()));
-		for (Reply reply1: list){
+				.eq(Reply::getReplyToId, reply.getReplyId()));
+		for (Reply reply1 : list) {
 			list.addAll(getRecursiveReplies(reply1));
 		}
 		return list;
 	}
 
 	@Override
-	public void addReply(String token, Reply reply) {
+	public ReplyVo addReply(String token, Reply reply) {
 		int userId = loginHelper.getUserId(token);
 		reply.setUserId(userId);
+		reply.setReplyDate(LocalDate.now());
+		reply.setPublishTime(LocalDateTime.now());
 		replyMapper.insert(reply);
+		Reply tmp = replyMapper.selectOne(new LambdaQueryWrapper<Reply>()
+				.eq(Reply::getPublishTime, reply.getPublishTime()));
 		// 更新replyCount
-		Comment comment = commentMapper.selectById(reply.getCommentId());
-		comment.setReplyCount(Math.toIntExact(replyMapper.selectCount(new LambdaQueryWrapper<Reply>()
-						.eq(Reply::getCommentId, comment.getCommentId()))));
-		commentMapper.updateById(comment);
+		synchronized (this) {
+			Comment comment = commentMapper.selectById(reply.getCommentId());
+			comment.setReplyCount(comment.getReplyCount() + 1);
+			commentMapper.updateById(comment);
+		}
+		return convertToReplyVo(userId, tmp);
 	}
 
 	@Override
 	public Boolean updateReply(String token, Reply reply) {
 		int userId = loginHelper.getUserId(token);
-		if(reply.getUserId()!=userId)
+		if (reply.getUserId() != userId)
 			return false;
 		replyMapper.updateById(reply);
 		return true;
@@ -89,9 +97,15 @@ public class ReplyServiceImpl extends ServiceImpl<ReplyMapper, Reply> implements
 	@Override
 	public ReplyVo convertToReplyVo(int userId, Reply reply) {
 		ReplyVo vo = new ReplyVo();
-		Reply reply2 = replyMapper.selectById(reply.getReplyToId());
 		User user = userMapper.selectById(reply.getUserId());
-		User user2 = userMapper.selectById(reply2.getUserId());
+		User user2 = new User();
+		if (reply.getReplyToId() != null) {
+			Reply reply2 = replyMapper.selectById(reply.getReplyToId());
+			user2 = userMapper.selectById(reply2.getUserId());
+		} else {
+			Comment comment = commentMapper.selectById(reply.getCommentId());
+			user2 = userMapper.selectById(comment.getUserId());
+		}
 		vo.setReplyId(reply.getReplyId());
 		vo.setCommentId(reply.getCommentId());
 		vo.setReplyToId(reply.getReplyToId());

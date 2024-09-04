@@ -29,23 +29,22 @@ public class ReplyController {
 	 * @param replyId 回复id
 	 * @return {@link Result }
 	 */
-	@GetMapping("/getReplyConversation")
-	public Result getReplyConversation(@RequestParam int replyId) {
+	@GetMapping("/getReplyConversation/{replyId}")
+	public Result getReplyConversation(@PathVariable int replyId) {
 		return Result.success(replyService.getReplyConversation(replyId), "成功获取回复对话");
 	}
 
 	@PostMapping("/add")
 	public Result addReply(@RequestHeader("Authorization") String token, @RequestBody Reply reply) {
-		replyService.addReply(token, reply);
-		return Result.success("评论成功");
+		return Result.success(replyService.addReply(token, reply), "评论成功");
 	}
 
 
 	@PutMapping("/update")
 	public Result updateReply(@RequestHeader("Authorization") String token, @RequestBody Reply reply) {
-		if (replyService.updateReply(token, reply)){
+		if (replyService.updateReply(token, reply)) {
 			return Result.success("更新成功");
-		}else {
+		} else {
 			return Result.error("评论失败");
 		}
 	}
