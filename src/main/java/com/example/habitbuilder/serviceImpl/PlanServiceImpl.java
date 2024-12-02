@@ -3,8 +3,10 @@ package com.example.habitbuilder.serviceImpl;
 import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.InputRequiredException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.habitbuilder.Qwen2;
+import com.example.habitbuilder.domain.vo.PlanOptionVo;
 import com.example.habitbuilder.mapper.EventMapper;
 import com.example.habitbuilder.mapper.HistoryConversationMapper;
 import com.example.habitbuilder.mapper.UserMapper;
@@ -15,6 +17,7 @@ import com.example.habitbuilder.mapper.PlanMapper;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IPlanService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.habitbuilder.utils.LoginHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +30,7 @@ import java.util.Objects;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author 实训小组
@@ -35,174 +38,165 @@ import java.util.Objects;
  */
 @Service
 public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IPlanService {
-    @Autowired
-    private EventServiceImpl eventService;
-    @Autowired
-    private PlanMapper planMapper;
-    @Autowired
-    private EventMapper eventMapper;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private UserServiceImpl userServiceImpl;
-    @Autowired
-    private HistoryConversationMapper historyConversationMapper;
+	@Autowired
+	private EventServiceImpl eventService;
+	@Autowired
+	private PlanMapper planMapper;
+	@Autowired
+	private EventMapper eventMapper;
+	@Autowired
+	private UserMapper userMapper;
+	@Autowired
+	private UserServiceImpl userServiceImpl;
+	@Autowired
+	private HistoryConversationMapper historyConversationMapper;
+	@Autowired
+	private LoginHelper loginHelper;
 
-    @Override
-    public List<Object[]> dailyPlanType(int userId,LocalDate date) {
-        List<Integer> planIds = eventService.findPlanIdByDate(date);
-        if (planIds.isEmpty()) {
-            return List.of();
-        }
+	@Override
+	public List<PlanOptionVo> dailyPlanOptions(String token, LocalDate date) {
+		int userId = loginHelper.getUserId(token);
+		return planMapper.getDailyPlanOptions(userId, date);
+	}
 
-        QueryWrapper<Plan> planQueryWrapper = new QueryWrapper<>();
-        planQueryWrapper.in("planId", planIds).eq("userId",userId);
-        List<Plan> plans = planMapper.selectList(planQueryWrapper);
+	public Integer findUserIdByPlanId(int planId) {
+		QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+		queryWrapper.select("userId").eq("planId", planId);
+		Plan plan = planMapper.selectOne(queryWrapper);
+		return plan != null ? plan.getUserId() : null;
+	}
 
-        List<Object[]> result = new ArrayList<>();
-        for (Plan plan : plans) {
-            result.add(new Object[]{plan.getPlanId(), plan.getTitle()});
-        }
+	public Plan addPlan(Plan plan) {
+		planMapper.insert(plan);
+		return plan;
+	}
 
-        return result;
-    }
-    public Integer findUserIdByPlanId(int planId){
-        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("userId").eq("planId", planId);
-        Plan plan = planMapper.selectOne(queryWrapper);
-        return plan != null ? plan.getUserId() : null;
-    }
-    public Plan addPlan(Plan plan) {
-        planMapper.insert(plan);
-        return plan;
-    }
+	public void deletePlan(int planId) {
+		planMapper.deleteById(planId);
+	}
 
-    public void deletePlan(int planId) {
-        planMapper.deleteById(planId);
-    }
+	public void updatePlan(Plan plan) {
 
-    public void updatePlan(Plan plan) {
+		QueryWrapper<Plan> wrapper = new QueryWrapper<>();
+		wrapper.eq("planId", plan.getPlanId());
+		planMapper.update(plan, wrapper);
+	}
 
-        QueryWrapper<Plan> wrapper = new QueryWrapper<>();
-        wrapper.eq("planId", plan.getPlanId());
-        planMapper.update(plan, wrapper);
-    }
+	public List<Plan> getMyPlan(int userId) {
+		QueryWrapper<Plan> wrapper = new QueryWrapper<>();
+		wrapper.eq("userId", userId);
+		return planMapper.selectList(wrapper);
+	}
 
-    public List<Plan> getMyPlan(int userId) {
-        QueryWrapper<Plan> wrapper = new QueryWrapper<>();
-        wrapper.eq("userId", userId);
-        return planMapper.selectList(wrapper);
-    }
+	@Override
+	public int lowerScore(int userId, LocalDate date) {
+		QueryWrapper<Plan> wrapper = new QueryWrapper<>();
+		wrapper.eq("userId", userId);
+		List<Plan> plans = planMapper.selectList(wrapper);
+		boolean flag = true;
+		User user = userServiceImpl.getByUserId(userId);
+		for (int i = 0; i < plans.size(); i++) {
+			Plan plan = plans.get(i);
+			System.out.println(plan.getPlanId());
+			QueryWrapper<Event> wrapper1 = new QueryWrapper<>();
+			wrapper1.eq("planId", plan.getPlanId());
+			List<Event> events = eventMapper.selectList(wrapper1);
+			for (int j = 0; j < events.size(); j++) {
+				Event event = events.get(j);
+				if (event.getExecutionDate().equals(date) && ( event.getIsCompleted() == false )) {
+					flag = false;
+					user.setMyScore(user.getMyScore() - 2);
+					System.out.println(user.getMyScore());
+				}
+			}
+		}
+		if (flag == false) {
+			userServiceImpl.updateById(user);
+			return user.getMyScore();
+		} else {
+			return -1;
+		}
+	}
 
-    @Override
-    public int lowerScore(int userId,LocalDate date) {
-        QueryWrapper<Plan> wrapper = new QueryWrapper<>();
-        wrapper.eq("userId", userId);
-        List<Plan>plans=planMapper.selectList(wrapper);
-        boolean flag=true;
-        User user= userServiceImpl.getByUserId(userId);
-        for (int i = 0; i < plans.size(); i++) {
-            Plan plan= plans.get(i);
-            System.out.println(plan.getPlanId());
-            QueryWrapper<Event> wrapper1 = new QueryWrapper<>();
-            wrapper1.eq("planId", plan.getPlanId());
-            List<Event>events=eventMapper.selectList(wrapper1);
-            for (int j = 0; j < events.size(); j++) {
-                Event event=events.get(j);
-                if(event.getExecutionDate().equals(date) && (event.getIsCompleted()==false)){
-                    flag=false;
-                    user.setMyScore(user.getMyScore()-2);
-                    System.out.println(user.getMyScore());
-                }
-            }
-        }
-        if(flag==false){
-            userServiceImpl.updateById(user);
-            return user.getMyScore();
-        }else{
-            return -1;
-        }
-    }
+	@Override
+	public List<Plan> searchPlan(String title, String tag, int userId) {
+		QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("userId", userId);
+		if (!Objects.equals(tag, "")) {
+			queryWrapper.eq("tag", tag);
+		}
+		if (!Objects.equals(title, "")) {
+			queryWrapper.like("title", title);
+		}
+		return planMapper.selectList(queryWrapper);
+	}
 
-    @Override
-    public List<Plan> searchPlan(String title,String tag,int userId) {
-        QueryWrapper <Plan> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId", userId);
-        if(!Objects.equals(tag, "")){
-            queryWrapper.eq("tag", tag);
-        }
-        if(!Objects.equals(title, "")){
-            queryWrapper.like("title", title);
-        }
-        return planMapper.selectList(queryWrapper);
-    }
+	@Override
+	public HistoryConversation autoAddPlan(Plan plan) {
+		plan.setStartDate(LocalDate.from(plan.getCreateDate().plusDays(1)));
+		plan.setEndDate(LocalDate.from(plan.getCreateDate().plusDays(7)));
 
-    @Override
-    public HistoryConversation autoAddPlan(Plan plan) {
-        plan.setStartDate(LocalDate.from(plan.getCreateDate().plusDays(1)));
-        plan.setEndDate(LocalDate.from(plan.getCreateDate().plusDays(7)));
+		planMapper.insert(plan); //先生成一个计划
+		QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("planId", plan.getPlanId());
+		Plan newPlan = planMapper.selectOne(queryWrapper);
+		LocalDate startDate = newPlan.getStartDate();  //从计划开始的日期开始一周
+		try {
+			String[] events = Qwen2.streamCallWithMessage(newPlan.getTitle(), newPlan.getDescription()); // 或者这个计划的所有事件
+			int i = 0;
+			for (String event : events) {
+				//event的起始时间设置重新考虑
+				Event eventDay = new Event(0, newPlan.getPlanId(), event, startDate.plusDays(i), LocalTime.of(12, 0, 0), LocalTime.of(13, 0, 0), false);
+				i++;
+				eventService.save(eventDay); // 存入数据库 这个方法会先检查数据库是否有这个值，没有则插入，有则更新
+			}
+		} catch (ApiException | NoApiKeyException | InputRequiredException e) {
+			System.out.println(e.getMessage()); //报错处理 gpt输出格式有问题
+		}
+		HistoryConversation historyConversation = new HistoryConversation(null, plan.getTitle(), plan.getUserId(), LocalDateTime.now(), plan.getPlanId());
+		historyConversationMapper.insert(historyConversation);
+		return historyConversation;
+	}
 
-        planMapper.insert(plan); //先生成一个计划
-        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("planId",plan.getPlanId());
-        Plan newPlan = planMapper.selectOne(queryWrapper);
-        LocalDate startDate = newPlan.getStartDate();  //从计划开始的日期开始一周
-        try {
-            String[] events = Qwen2.streamCallWithMessage(newPlan.getTitle(),newPlan.getDescription()); // 或者这个计划的所有事件
-            int i=0;
-            for(String event : events){
-                //event的起始时间设置重新考虑
-                Event eventDay = new Event(0,newPlan.getPlanId(),event,startDate.plusDays(i), LocalTime.of(12, 0, 0),LocalTime.of(13, 0, 0),false);
-                i++;
-                eventService.save(eventDay); // 存入数据库 这个方法会先检查数据库是否有这个值，没有则插入，有则更新
-            }
-        } catch (ApiException | NoApiKeyException | InputRequiredException e) {
-            System.out.println(e.getMessage()); //报错处理 gpt输出格式有问题
-    }
-        HistoryConversation historyConversation = new HistoryConversation (null,plan.getTitle(),plan.getUserId(), LocalDateTime.now(),plan.getPlanId());
-        historyConversationMapper.insert(historyConversation);
-        return historyConversation;
-        }
+	@Override
+	public List<Plan> getPlanList() {
+		return planMapper.selectList(null);
+	}// 所有计划
 
-    @Override
-    public List<Plan> getPlanList(){
-        return planMapper.selectList(null);
-    }// 所有计划
+	@Override
+	public String[] fixPlan(Integer planId, String request) {
+		QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("planId", planId);
+		Plan plan = planMapper.selectOne(queryWrapper);
+		System.out.println(planId);
+		String decription = plan.getDescription();
+		String[] planContent = new String[0];
+		List<Event> events = eventMapper.selectList(new QueryWrapper<Event>().eq("planId", plan.getPlanId()));
+		try {
+			planContent = Qwen2.fixCallWithMessage(decription, events, request);
+		} catch (ApiException | NoApiKeyException | InputRequiredException e) {
+			System.out.println(e.getMessage());
+		}
 
-    @Override
-    public String[] fixPlan(Integer planId,String request) {
-        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("planId",planId);
-        Plan plan = planMapper.selectOne(queryWrapper);
-        System.out.println(planId);
-        String decription = plan.getDescription();
-        String[] planContent = new String[0];
-        List<Event>events=eventMapper.selectList(new QueryWrapper<Event>().eq("planId", plan.getPlanId()));
-        try{
-            planContent=Qwen2.fixCallWithMessage(decription,events,request);
-        }catch (ApiException | NoApiKeyException | InputRequiredException e){
-            System.out.println(e.getMessage());
-        }
+		return planContent;
+	}
 
-        return planContent;
-    }
+	@Override
+	public void completeFix(int planId, String[] planContent) {
+		List<Event> events = eventMapper.selectList(new QueryWrapper<Event>().eq("planId", planId));
+		for (int i = 0; i < events.size(); i++) {
+			String descripetion = planContent[i];
+			Event event = events.get(i);
+			event.setDescription(descripetion);
+			eventMapper.updateById(event);
+		}
+	}
 
-    @Override
-    public void completeFix(int planId, String[] planContent) {
-        List<Event>events=eventMapper.selectList(new QueryWrapper<Event>().eq("planId", planId));
-        for(int i=0;i<events.size();i++){
-            String descripetion=planContent[i];
-            Event event=events.get(i);
-            event.setDescription(descripetion);
-            eventMapper.updateById(event);
-        }
-    }
-
-    @Override
-    public List<Plan> searchByTag(String tag,int userId) {
-        QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("tag", tag);
-        queryWrapper.eq("userId",userId);
-        return planMapper.selectList(queryWrapper);
-    }
+	@Override
+	public List<Plan> searchByTag(String tag, int userId) {
+		QueryWrapper<Plan> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("tag", tag);
+		queryWrapper.eq("userId", userId);
+		return planMapper.selectList(queryWrapper);
+	}
 }

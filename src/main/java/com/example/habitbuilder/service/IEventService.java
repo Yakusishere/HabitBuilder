@@ -1,5 +1,7 @@
 package com.example.habitbuilder.service;
 
+import com.example.habitbuilder.domain.bo.EventBo;
+import com.example.habitbuilder.domain.vo.EventVo;
 import com.example.habitbuilder.pojo.Event;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -17,26 +19,19 @@ import java.util.List;
  */
 public interface IEventService extends IService<Event> {
 
-   void createEvent(Event event);
+   List<EventVo> getEventList(String token, EventBo bo);
 
-   boolean changeEvent(int eventId, String eventDescription, LocalTime startTime, LocalTime endTime);
+   void addEvent(String token,Event event);
 
-   boolean deleteEvent(Integer eventId);
+   void changeEvent(String token, Event event);
+
+   void deleteEvent(String token, int eventId);
 
    boolean completeEvent(int eventId);
 
-   List<Event> eventInPlan(LocalDate date, int planId);
-
    List<Event> dailyEvent(int userId,LocalDate date);
 
-   List<Integer> findPlanIdByDate(LocalDate date);
-
    int findPlanIdByEventId(int eventId);
-
-    List<Event> getPlanEvents(int planId);
-
-   void addEvent(Event event);
-
 
    Object setColor(int userId,LocalDate localDate);
 }

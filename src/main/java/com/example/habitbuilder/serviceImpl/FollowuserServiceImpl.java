@@ -43,10 +43,10 @@ public class FollowuserServiceImpl extends ServiceImpl<FollowuserMapper, Followu
     public List<UserVo> getFollowList(String token, PageQuery pageQuery) {
         int userId = loginHelper.getUserId(token);
 	    return followuserMapper.selectPage(pageQuery.build(),
-                        new LambdaQueryWrapper<Followuser>().eq(Followuser::getSendUserId, userId))
+                        new LambdaQueryWrapper<Followuser>().eq(Followuser::getFollowerId, userId))
                 .getRecords()
                 .stream()
-                .map(Followuser::getReceiveUserId)
+                .map(Followuser::getFolloweeId)
                 .collect(Collectors.collectingAndThen(
                         Collectors.toList(),
                         userIdList -> userMapper.selectList(new LambdaQueryWrapper<User>().in(User::getUserId, userIdList))
@@ -60,10 +60,10 @@ public class FollowuserServiceImpl extends ServiceImpl<FollowuserMapper, Followu
     public List<UserVo> getFanList(String token, PageQuery pageQuery) {
         int userId = loginHelper.getUserId(token);
         return followuserMapper.selectPage(pageQuery.build(),
-                        new LambdaQueryWrapper<Followuser>().eq(Followuser::getReceiveUserId, userId))
+                        new LambdaQueryWrapper<Followuser>().eq(Followuser::getFollowerId, userId))
                 .getRecords()
                 .stream()
-                .map(Followuser::getSendUserId)
+                .map(Followuser::getFolloweeId)
                 .collect(Collectors.collectingAndThen(
                         Collectors.toList(),
                         userIdList -> userMapper.selectList(new LambdaQueryWrapper<User>().in(User::getUserId, userIdList))

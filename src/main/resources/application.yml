@@ -6,7 +6,9 @@ spring:
     url: jdbc:mysql://localhost:3306/test1?serverTimezone=UTC
     username: 'root'
     password: '123456'
-  mybatis-plus:
-    configuration:
-      plugins:
-        - com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor
+
+mybatis-plus:
+  mapper-locations: classpath*:mappers/*.xml
+  configuration:
+    plugins:
+      - com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor

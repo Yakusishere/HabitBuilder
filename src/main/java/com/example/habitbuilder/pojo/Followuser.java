@@ -29,9 +29,9 @@ public class Followuser implements Serializable {
     @TableId(value = "followUserId", type = IdType.AUTO)
     private Integer followUserId;
 
-    @TableField("sendUserId")
-    private Integer sendUserId;
+    @TableField("followerId")
+    private Integer followerId;
 
-    @TableField("receiveUserId")
-    private Integer receiveUserId;
+    @TableField("followeeId")
+    private Integer followeeId;
 }

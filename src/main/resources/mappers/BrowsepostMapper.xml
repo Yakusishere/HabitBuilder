@@ -10,9 +10,6 @@
 		<result property="browseTime" column="browseTime"/>
 	</resultMap>
 
-	<!--
-		使用 JOIN 语句实现联表查询，并将结果映射到 BrowseHistoryVo 对象中
-	-->
 	<select id="selectBrowseList" resultMap="BrowseHistoryVoMap">
 		SELECT p.title      AS title,
 		       u.nickName   AS nickName,
@@ -21,7 +18,7 @@
 		       bp.startTime AS browseTime
 		FROM browsePost bp
 			     JOIN post p ON bp.postId = p.id
-			     JOIN uesr u ON bp.userId = u.userId
+			     JOIN user u ON bp.userId = u.userId
 		WHERE bp.userId = #{userId}
 		ORDER BY bp.startTime DESC
 	</select>

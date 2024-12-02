@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.habitbuilder.mapper.EventMapper">
+	<resultMap id="EventVoMap" type="com.example.habitbuilder.domain.vo.EventVo">
+		<result property="planId" column="planId"/>
+		<result property="eventId" column="eventId"/>
+		<result property="title" column="title"/>
+		<result property="description" column="description"/>
+		<result property="startTime" column="startTime"/>
+		<result property="endTime" column="endTime"/>
+		<result property="executionDate" column="executionDate"/>
+		<result property="isCompleted" column="isCompleted"/>
+	</resultMap>
+
+<select id="getEventList" resultMap="EventVoMap">
+	SELECT p.planId,
+	p.title,
+	e.eventId,
+	e.description,
+	e.startTime,
+	e.endTime,
+	e.executionDate,
+	e.iscompleted
+	FROM plan p
+	JOIN event e ON p.planId = e.planId
+	WHERE 1=1
+	<if test="bo.planId != null">
+		AND p.planId = #{bo.planId}
+	</if>
+	<if test="bo.eventId != null">
+		AND e.eventId = #{bo.eventId}
+	</if>
+	<if test="bo.userId != null">
+		AND p.userId = #{bo.userId}
+	</if>
+	<if test="bo.date != null">
+		AND e.executionDate = #{bo.date}
+	</if>
+</select>
+</mapper>

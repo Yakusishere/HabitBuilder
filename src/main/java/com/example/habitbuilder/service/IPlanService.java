@@ -1,5 +1,6 @@
 package com.example.habitbuilder.service;
 
+import com.example.habitbuilder.domain.vo.PlanOptionVo;
 import com.example.habitbuilder.pojo.HistoryConversation;
 import com.example.habitbuilder.pojo.Plan;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public interface IPlanService extends IService<Plan> {
 
-    List<Object[]> dailyPlanType(int userId,LocalDate date);
+    List<PlanOptionVo> dailyPlanOptions(String token, LocalDate date);
 
     Integer findUserIdByPlanId(int planId);
 

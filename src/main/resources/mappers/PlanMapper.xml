@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.habitbuilder.mapper.PlanMapper">
+	<resultMap id="PlanOptionVoMap" type="com.example.habitbuilder.domain.vo.PlanOptionVo">
+		<result property="planId" column="planId"/>
+		<result property="title" column="title"/>
+	</resultMap>
+
+	<select id="getDailyPlanOptions" resultMap="PlanOptionVoMap">
+		SELECT p.planId AS planId,
+		       p.title  AS title
+		FROM plan p
+			     JOIN event e ON p.planId = e.planId
+		WHERE e.executionDate = #{date}
+		  AND p.userId = #{userId}
+	</select>
+</mapper>
