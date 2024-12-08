@@ -1,5 +1,6 @@
 package com.example.habitbuilder.serviceImpl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -10,7 +11,10 @@ import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IManagerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.habitbuilder.utils.LoginManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -255,5 +259,15 @@ public class ManagerServiceImpl extends ServiceImpl<ManagerMapper, Manager> impl
         int totalEventCount = getTotalEventCount();
         int userCount = getUserCount();
         return userCount == 0 ? 0 : (double) totalEventCount / userCount;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Manager manager = managerMapper.selectOne(new LambdaQueryWrapper<Manager>()
+                .eq(Manager::getManagerName,username));
+        if(manager == null){
+            throw new UsernameNotFoundException(username);
+        }
+        return new LoginManager(manager);
     }
 }

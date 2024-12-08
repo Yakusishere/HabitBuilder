@@ -4,6 +4,7 @@ import com.example.habitbuilder.pojo.Manager;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.habitbuilder.pojo.Plan;
 import com.example.habitbuilder.pojo.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * @author 实训小组
  * @since 2024-07-03
  */
-public interface IManagerService extends IService<Manager> {
+public interface IManagerService extends IService<Manager>, UserDetailsService {
     // 管理员注册
     void managerRegister(Manager manager);
 

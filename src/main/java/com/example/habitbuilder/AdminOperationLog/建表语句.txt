@@ -1,0 +1,12 @@
+-- ----------------------------
+-- Table structure for admin_operation_log
+-- ----------------------------
+DROP TABLE IF EXISTS `admin_operation_log`;
+CREATE TABLE `admin_operation_log` (
+  `logId` int NOT NULL AUTO_INCREMENT COMMENT '日志ID',
+  `managerId` int DEFAULT NULL COMMENT '管理员ID',
+  `operation` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '操作描述',
+  `operationTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+  PRIMARY KEY (`logId`) USING BTREE,
+  INDEX `managerId`(`managerId` ASC) USING BTREE
+) ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=Dynamic;
