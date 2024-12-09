@@ -50,6 +50,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((conf) -> conf
                         .requestMatchers("/manager/managerLogin").permitAll() // 放行登陆和注册
                         .requestMatchers("/manager/managerRegister").permitAll()
+                        .requestMatchers("/user/login").permitAll() // 放行登陆和注册
+                        .requestMatchers("/user/register").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()//别的请求都需要认证之后
                 )

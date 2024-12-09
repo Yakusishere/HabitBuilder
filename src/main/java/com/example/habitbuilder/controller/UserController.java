@@ -9,6 +9,7 @@ import com.example.habitbuilder.service.IUserService;
 import com.example.habitbuilder.serviceImpl.UserServiceImpl;
 import com.example.habitbuilder.utils.LoginHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,9 @@ import java.util.List;
 public class UserController {
 	@Autowired
 	private IUserService userService;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	private LoginHelper loginHelper;
@@ -121,7 +125,8 @@ public class UserController {
 		String password = userRequest.getPassword();
 		boolean flag = userService.findByUserName(username);
 		if (!flag) {
-			userService.register(username, password);
+			String encodedPassword = passwordEncoder.encode(password);
+			userService.register(username, encodedPassword);
 			return Result.success("注册成功");
 		} else {
 			return Result.error("用户名已存在");
