@@ -7,12 +7,16 @@ import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IUserService;
 import com.example.habitbuilder.serviceImpl.UserServiceImpl;
+import com.example.habitbuilder.utils.JwtUtil;
 import com.example.habitbuilder.utils.LoginHelper;
+import com.example.habitbuilder.utils.LoginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -25,111 +29,121 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-	@Autowired
-	private IUserService userService;
+    @Autowired
+    private IUserService userService;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private LoginHelper loginHelper;
+    @Autowired
+    private JwtUtil jwtUtil;
 
-	/**
-	 * 获取用户列表
-	 *
-	 * @param user      用户
-	 * @param pageQuery 页面查询
-	 * @return {@link Result }
-	 */
-	@PostMapping("/list")
-	public Result getUserList(@RequestBody User user, PageQuery pageQuery) {
-		return Result.success(userService.getUserList(user, pageQuery), "查询成功");
-	}
+    /**
+     * 获取用户列表
+     *
+     * @param user      用户
+     * @param pageQuery 页面查询
+     * @return {@link Result }
+     */
+    @PostMapping("/list")
+    public Result getUserList(@RequestBody User user, PageQuery pageQuery) {
+        return Result.success(userService.getUserList(user, pageQuery), "查询成功");
+    }
 
-	/**
-	 * 按用户id获取
-	 *
-	 * @param userId 用户id
-	 * @return {@link Result }
-	 */
-	@GetMapping("/getByUserId/{userId}")
-	public Result getByUserId(@PathVariable(value = "userId") Integer userId) {
-		User user = userService.getByUserId(userId);
-		if (user == null) {
-			return Result.error("该用户不存在");
-		}
-		return Result.success(user, "查询成功");
-	}
+    /**
+     * 按用户id获取
+     *
+     * @param userId 用户id
+     * @return {@link Result }
+     */
+    @GetMapping("/getByUserId/{userId}")
+    public Result getByUserId(@PathVariable(value = "userId") Integer userId) {
+        User user = userService.getByUserId(userId);
+        if (user == null) {
+            return Result.error("该用户不存在");
+        }
+        return Result.success(user, "查询成功");
+    }
 
-	@PostMapping("/search")
-	public Result searchUser(@RequestBody User user){
-		return Result.success(userService.searchUser(user),"查询成功");
-	}
+    @PostMapping("/search")
+    public Result searchUser(@RequestBody User user) {
+        return Result.success(userService.searchUser(user), "查询成功");
+    }
 
-	/**
-	 * 更新用户
-	 *
-	 * @param user 用户
-	 * @return {@link Result }
-	 */
-	@PutMapping("/update")
-	public Result updateUser(@RequestHeader("Authorization") String token, @RequestBody User user) {
-		if (!userService.updateUser(token, user)) {
-			return Result.error("更新失败");
-		}
-		return Result.success("更新成功");
-	}
+    /**
+     * 更新用户
+     *
+     * @param user 用户
+     * @return {@link Result }
+     */
+    @PutMapping("/update")
+    public Result updateUser(@RequestHeader("Authorization") String token, @RequestBody User user) {
+        if (!userService.updateUser(token, user)) {
+            return Result.error("更新失败");
+        }
+        return Result.success("更新成功");
+    }
 
 
-	/**
-	 * 删除用户
-	 *
-	 * @param token  令牌
-	 * @param userId 用户id
-	 * @return {@link Result }
-	 */
-	@DeleteMapping("/delete/{userId}")
-	public Result deleteUser(@RequestHeader("Authorization") String token, @PathVariable("userId") Integer userId) {
-		if (!userService.deleteById(token, userId)) {
-			return Result.error("删除失败");
-		}
-		return Result.success("删除成功");
-	}
+    /**
+     * 删除用户
+     *
+     * @param token  令牌
+     * @param userId 用户id
+     * @return {@link Result }
+     */
+    @DeleteMapping("/delete/{userId}")
+    public Result deleteUser(@RequestHeader("Authorization") String token, @PathVariable("userId") Integer userId) {
+        if (!userService.deleteById(token, userId)) {
+            return Result.error("删除失败");
+        }
+        return Result.success("删除成功");
+    }
 
-	/**
-	 * 登录
-	 *
-	 * @param userRequest 用户请求
-	 * @return {@link Result }
-	 */
-	@PostMapping("/login")
-	public Result login(@RequestBody User userRequest) {
-		String username = userRequest.getUserName();
-		String password = userRequest.getPassword();
-		String token = userService.login(username, password);
-		if (token == null) {
-			return Result.error("用户名或密码错误");
-		}
-		return Result.success(token, "登陆成功");
-	}
+    /**
+     * 登录
+     *
+     * @param userRequest 用户请求
+     * @return {@link Result }
+     */
+    @PostMapping("/login")
+    public Result login(@RequestBody User userRequest) {
+        String username = userRequest.getUserName();
+        String password = userRequest.getPassword();
+        LoginManager user1 = (LoginManager) userService.loadUserByUsername(username);
+        if (user1 != null) {
+            if (passwordEncoder.matches(password, user1.getPassword())) {
+                //生成jwt token
+                String token = jwtUtil.createJwt(user1);
+                Map<String, Object> responseData = new HashMap<>();
+                responseData.put("token", token);
+                responseData.put("manager", user1);
+                return Result.success(responseData, "管理员登录成功");
+            } else {
+                return Result.error("密码错误");
+            }
+        } else {
+            return Result.error("账户不存在");
+        }
+    }
 
-	/**
-	 * 注册
-	 *
-	 * @param userRequest 用户请求
-	 * @return {@link Result }
-	 */
-	@PostMapping("/register")
-	public Result register(@RequestBody User userRequest) {
-		String username = userRequest.getUserName();
-		String password = userRequest.getPassword();
-		boolean flag = userService.findByUserName(username);
-		if (!flag) {
-			String encodedPassword = passwordEncoder.encode(password);
-			userService.register(username, encodedPassword);
-			return Result.success("注册成功");
-		} else {
-			return Result.error("用户名已存在");
-		}
-	}
+    /**
+     * 注册
+     *
+     * @param userRequest 用户请求
+     * @return {@link Result }
+     */
+    @PostMapping("/register")
+    public Result register(@RequestBody User userRequest) {
+        String username = userRequest.getUserName();
+        String password = userRequest.getPassword();
+        boolean flag = userService.findByUserName(username);
+        if (!flag) {
+            String encodedPassword = passwordEncoder.encode(password);
+            userService.register(username, encodedPassword);
+            return Result.success("注册成功");
+        } else {
+            return Result.error("用户名已存在");
+        }
+    }
 }

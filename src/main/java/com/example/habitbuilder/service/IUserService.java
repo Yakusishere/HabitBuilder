@@ -5,6 +5,7 @@ import com.example.habitbuilder.domain.bo.UserBo;
 import com.example.habitbuilder.domain.vo.UserVo;
 import com.example.habitbuilder.pojo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,4 +41,6 @@ public interface IUserService extends IService<User> {
     boolean deleteById(String token ,int userId);
 
     public UserVo ConvertToUserVo(User user);
+
+    UserDetails loadUserByUsername(String username);
 }

@@ -7,13 +7,17 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.habitbuilder.domain.PageQuery;
 import com.example.habitbuilder.domain.vo.UserVo;
+import com.example.habitbuilder.pojo.Manager;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.mapper.UserMapper;
 import com.example.habitbuilder.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.habitbuilder.utils.JwtUtils;
 import com.example.habitbuilder.utils.LoginHelper;
+import com.example.habitbuilder.utils.LoginManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,6 +41,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
 	@Override
 	public List<User> getUserList(User user, PageQuery pageQuery) {
+		System.out.println("666");
 		// 创建查询条件
 		LambdaQueryWrapper<User> lqw = Wrappers.lambdaQuery();
 		lqw.eq(user.getUserId() != null, User::getUserId, user.getUserId());
@@ -132,6 +137,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 		vo.setMyScore(user.getMyScore());
 		vo.setRegisterTime(user.getRegisterTime());
 		return vo;
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+				.eq(User::getUserName,username));
+		if(user == null){
+			throw new UsernameNotFoundException(username);
+		}
+		return new LoginManager(user);
 	}
 
 	/*private LambdaQueryWrapper<UserVo> buildlqw(UserBo bo){
