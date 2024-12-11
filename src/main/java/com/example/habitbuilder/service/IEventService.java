@@ -29,9 +29,9 @@ public interface IEventService extends IService<Event> {
 
    boolean completeEvent(int eventId);
 
-   List<Event> dailyEvent(int userId,LocalDate date);
+   List<EventVo> dailyEvent(String token,LocalDate date);
 
    int findPlanIdByEventId(int eventId);
 
-   Object setColor(int userId,LocalDate localDate);
+   Object setColor(String token,LocalDate localDate);
 }

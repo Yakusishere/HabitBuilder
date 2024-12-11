@@ -9,7 +9,7 @@ import com.example.habitbuilder.pojo.Browsepost;
 import com.example.habitbuilder.mapper.BrowsepostMapper;
 import com.example.habitbuilder.service.IBrowsepostService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.habitbuilder.utils.LoginHelper;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,7 @@ import java.util.List;
 @Service
 public class BrowsepostServiceImpl extends ServiceImpl<BrowsepostMapper, Browsepost> implements IBrowsepostService {
 	@Autowired
-	LoginHelper loginHelper;
+	JwtUtil jwtUtil;
 	@Autowired
 	BrowsepostMapper browsepostMapper;
 	@Autowired
@@ -38,13 +38,13 @@ public class BrowsepostServiceImpl extends ServiceImpl<BrowsepostMapper, Browsep
 
 	@Override
 	public List<BrowseHistoryVo> getBrowseHistory(String token) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		return browsepostMapper.selectBrowseList(userId);
 	}
 
 	@Override
 	public void startBrowsing(String token, int postId) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		Browsepost bp = browsepostMapper.selectOne(new LambdaQueryWrapper<Browsepost>()
 				.eq(Browsepost::getUserId,userId)
 				.eq(Browsepost::getPostId,postId));
@@ -64,7 +64,7 @@ public class BrowsepostServiceImpl extends ServiceImpl<BrowsepostMapper, Browsep
 
 	@Override
 	public void endBrowsing(String token, int postId) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		Browsepost bp = browsepostMapper.selectOne(new LambdaQueryWrapper<Browsepost>()
 				.eq(Browsepost::getUserId,userId)
 				.eq(Browsepost::getPostId,postId));

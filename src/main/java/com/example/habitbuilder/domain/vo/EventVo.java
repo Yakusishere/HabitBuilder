@@ -1,5 +1,6 @@
 package com.example.habitbuilder.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -15,11 +16,13 @@ public class EventVo {
 
 	private String description;
 
-	private Boolean isCompleted;
-
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime startTime;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime endTime;
 
 	private LocalDate executionDate;
+
+	private Boolean isCompleted;
 }

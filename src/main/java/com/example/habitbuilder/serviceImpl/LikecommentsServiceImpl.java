@@ -6,10 +6,9 @@ import com.example.habitbuilder.mapper.CommentMapper;
 import com.example.habitbuilder.pojo.Comment;
 import com.example.habitbuilder.pojo.Likecomments;
 import com.example.habitbuilder.mapper.LikecommentsMapper;
-import com.example.habitbuilder.pojo.Likepost;
 import com.example.habitbuilder.service.ILikecommentsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.habitbuilder.utils.LoginHelper;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,11 +30,11 @@ public class LikecommentsServiceImpl extends ServiceImpl<LikecommentsMapper, Lik
 	@Autowired
 	private CommentMapper commentMapper;
 	@Autowired
-	private LoginHelper loginHelper;
+	private JwtUtil jwtUtil;
 
 	@Override
 	public Boolean addLikeComment(String token, int commentId) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		if (likecommentsMapper.exists(new LambdaQueryWrapper<Likecomments>()
 				.eq(Likecomments::getUserId, userId)
 				.eq(Likecomments::getCommentId, commentId))) {
@@ -55,7 +54,7 @@ public class LikecommentsServiceImpl extends ServiceImpl<LikecommentsMapper, Lik
 
 	@Override
 	public Boolean deleteLikeComment(String token, int commentId) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		Likecomments likecomments = likecommentsMapper.selectOne(new LambdaQueryWrapper<Likecomments>()
 				.eq(Likecomments::getCommentId, commentId)
 				.eq(Likecomments::getUserId, userId));
@@ -83,7 +82,7 @@ public class LikecommentsServiceImpl extends ServiceImpl<LikecommentsMapper, Lik
 
 	public List<Likecomments> getLikeComment(String token) {
 		QueryWrapper<Likecomments> queryWrapper = new QueryWrapper<>();
-		queryWrapper.eq("userId", loginHelper.getUserId(token));
+		queryWrapper.eq("userId", jwtUtil.extractUserId(token));
 		return likecommentsMapper.selectList(queryWrapper);
 	}
 

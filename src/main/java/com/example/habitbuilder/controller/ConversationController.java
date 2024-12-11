@@ -4,6 +4,7 @@ import com.example.habitbuilder.pojo.Conversation;
 import com.example.habitbuilder.pojo.HistoryConversation;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.service.IConversationService;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,9 @@ import java.util.List;
 public class ConversationController {
     @Autowired
     private IConversationService conversationService;
+    @Autowired
+    private JwtUtil jwtUtil;
+
     //AI问答
     @PostMapping ("/AI")
     public Result AI(String question,int userId, int historyConversationId){
@@ -37,7 +41,8 @@ public class ConversationController {
     }
     // 增加对话
     @PostMapping("/addConversation")
-    public Result addConversation(@RequestBody Conversation conversation) {
+    public Result addConversation(@RequestHeader("Authorization")String token, @RequestBody Conversation conversation) {
+        conversation.setUserId(jwtUtil.extractUserId(token));
         conversation.setCreateTime(LocalDateTime.now());
         if(conversationService.save(conversation)){
             return Result.success("添加成功");

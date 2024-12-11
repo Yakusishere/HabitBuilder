@@ -1,19 +1,16 @@
 package com.example.habitbuilder.serviceImpl;
 
-import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.habitbuilder.domain.PageQuery;
 import com.example.habitbuilder.domain.vo.UserVo;
-import com.example.habitbuilder.pojo.Manager;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.mapper.UserMapper;
 import com.example.habitbuilder.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.habitbuilder.utils.JwtUtils;
-import com.example.habitbuilder.utils.LoginHelper;
+import com.example.habitbuilder.utils.JwtUtil;
 import com.example.habitbuilder.utils.LoginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * <p>
@@ -37,7 +33,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 	@Autowired
 	private UserMapper userMapper;
 	@Autowired
-	private LoginHelper loginHelper;
+	private JwtUtil jwtUtil;
 
 	@Override
 	public List<User> getUserList(User user, PageQuery pageQuery) {
@@ -68,7 +64,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
 	@Override
 	public Boolean updateUser(String token, User user) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		User user1 = userMapper.selectOne(new LambdaQueryWrapper<User>()
 				.eq(User::getUserName, user.getUserName()));
 		if (user1.getUserId() != userId) {
@@ -98,18 +94,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 	}
 
 	@Override
-	public String login(String username, String password) {
-		QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-		queryWrapper.eq("userName", username).eq("password", password);
-		User user = userMapper.selectOne(queryWrapper);
-		if (user != null) {
-			JwtUtils jwtUtils = new JwtUtils();
-			return jwtUtils.createToken(user.getUserId(), user.getUserName());
-		}
-		return null;
-	}
-
-	@Override
 	public void changeScore(int userId) {
 		User user = getById(userId);
 		int score = user.getMyScore() + 5;
@@ -119,7 +103,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
 	@Override
 	public boolean deleteById(String token, int userId) {
-		int myUserId = loginHelper.getUserId(token);
+		int myUserId = jwtUtil.extractUserId(token);
 		if (myUserId == userId) {
 			userMapper.deleteById(userId);
 			return true;

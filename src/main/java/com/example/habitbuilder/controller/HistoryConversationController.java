@@ -5,6 +5,7 @@ import com.example.habitbuilder.pojo.HistoryConversation;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.service.IConversationService;
 import com.example.habitbuilder.service.IHistoryConversationService;
+import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
@@ -74,8 +75,8 @@ public class HistoryConversationController {
 
     // 根据 ID 查询历史对话
     @GetMapping("/getHistoryConversationByUserId")
-    public Result getHistoryConversationByUserId(int userId) {
-        List<HistoryConversation> historyConversation=historyConversationService.getByUserId(userId);
+    public Result getHistoryConversationByUserId(@RequestHeader("Authorization")String token) {
+        List<HistoryConversation> historyConversation=historyConversationService.getByUserId(token);
         if(historyConversation.isEmpty()){
             return Result.error("该对话不存在");
         }else{

@@ -8,8 +8,7 @@ import com.example.habitbuilder.mapper.LikepostMapper;
 import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.service.ILikepostService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.habitbuilder.utils.LoginHelper;
-import kotlin.jvm.Synchronized;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,7 @@ import java.util.List;
 @Service
 public class LikepostServiceImpl extends ServiceImpl<LikepostMapper, Likepost> implements ILikepostService {
 	@Autowired
-	private LoginHelper loginHelper;
+	private JwtUtil jwtUtil;
 	@Autowired
 	private LikepostMapper likepostMapper;
 	@Autowired
@@ -35,7 +34,7 @@ public class LikepostServiceImpl extends ServiceImpl<LikepostMapper, Likepost> i
 
 	@Override
 	public Boolean likePost(String token, int postId) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		if (likepostMapper.exists(new LambdaQueryWrapper<Likepost>()
 				.eq(Likepost::getPostId, postId)
 				.eq(Likepost::getUserId, userId))) {
@@ -57,7 +56,7 @@ public class LikepostServiceImpl extends ServiceImpl<LikepostMapper, Likepost> i
 
 	@Override
 	public Boolean deleteLikePost(String token, int postId) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		Likepost likepost = likepostMapper.selectOne(new LambdaQueryWrapper<Likepost>()
 				.eq(Likepost::getPostId, postId)
 				.eq(Likepost::getUserId, userId));

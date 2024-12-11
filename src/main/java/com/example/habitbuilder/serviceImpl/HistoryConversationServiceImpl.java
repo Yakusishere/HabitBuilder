@@ -5,6 +5,7 @@ import com.example.habitbuilder.pojo.HistoryConversation;
 import com.example.habitbuilder.mapper.HistoryConversationMapper;
 import com.example.habitbuilder.service.IHistoryConversationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ import java.util.List;
 public class HistoryConversationServiceImpl extends ServiceImpl<HistoryConversationMapper, HistoryConversation> implements IHistoryConversationService {
     @Autowired
     private HistoryConversationMapper historyConversationMapper;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Override
     public HistoryConversation getHistoryConversation(HistoryConversation historyConversation) {
@@ -33,9 +36,9 @@ public class HistoryConversationServiceImpl extends ServiceImpl<HistoryConversat
     }
 
     @Override
-    public List<HistoryConversation> getByUserId(int userId) {
+    public List<HistoryConversation> getByUserId(String token) {
         QueryWrapper<HistoryConversation> QueryWrapper = new QueryWrapper<>();
-        QueryWrapper.eq("userId",userId);
+        QueryWrapper.eq("userId",jwtUtil.extractUserId(token));
         return historyConversationMapper.selectList(QueryWrapper);
     }
 }

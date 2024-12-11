@@ -1,7 +1,6 @@
 package com.example.habitbuilder.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.habitbuilder.domain.vo.CommentVo;
 import com.example.habitbuilder.domain.vo.ReplyVo;
 import com.example.habitbuilder.mapper.*;
@@ -10,7 +9,7 @@ import com.example.habitbuilder.service.ICommentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.habitbuilder.service.ILikecommentsService;
 import com.example.habitbuilder.service.IReplyService;
-import com.example.habitbuilder.utils.LoginHelper;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -46,7 +43,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 	@Autowired
 	private IReplyService replyService;
 	@Autowired
-	private LoginHelper loginHelper;
+	private JwtUtil jwtUtil;
 	@Autowired
 	private ILikecommentsService likecommentsService;
 
@@ -62,7 +59,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
 	@Override
 	public List<CommentVo> listByUserId(String token) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		List<Comment> commentList = commentMapper.selectList(new LambdaQueryWrapper<Comment>().eq(Comment::getUserId, userId));
 		List<CommentVo> commentVoList = new ArrayList<>();
 		for (Comment comment : commentList) {
@@ -73,7 +70,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
 	@Override
 	public CommentVo addComment(String token, Comment comment) {
-		comment.setUserId(loginHelper.getUserId(token));
+		comment.setUserId(jwtUtil.extractUserId(token));
 		comment.setCommentDate(LocalDate.now());
 		comment.setPublishTime(LocalDateTime.now());
 		commentMapper.insert(comment);

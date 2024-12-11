@@ -4,6 +4,8 @@ import com.example.habitbuilder.domain.PageQuery;
 import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.service.IPostService;
+//import com.example.habitbuilder.utils.AliOSSUtils;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,10 +26,13 @@ import java.util.List;
 @RequestMapping("/post")
 public class PostController {
     @Autowired
-    IPostService postService;
+    private IPostService postService;
 
-    /*@Autowired
-    private AliOSSUtils aliOSSUtils;*/
+    @Autowired
+    private JwtUtil jwtUtil;
+
+//    @Autowired
+//    private AliOSSUtils aliOSSUtils;
 
     /**
      * 获取所有帖子
@@ -89,11 +94,13 @@ public class PostController {
         return Result.success("删除帖子成功");
     }
 
-   /* @PostMapping("/upload")
-    public Result upload(MultipartFile image) throws IOException {
-        String url = aliOSSUtils.upload(image);
-        return Result.success(url, "上传成功");
-    }*/
+//    @CrossOrigin(origins = "http://localhost:5173")
+//    @PostMapping("/upload")
+//    public Result uplaod(MultipartFile image) throws IOException {
+//        System.out.println("调用upload接口");
+//        String url = aliOSSUtils.upload(image);
+//        return Result.success(url);
+//    }
 
     @GetMapping("/searchPost")
     public Result searchPost(String title){

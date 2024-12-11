@@ -3,7 +3,6 @@ package com.example.habitbuilder.serviceImpl;
 import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.InputRequiredException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.habitbuilder.Qwen2;
 import com.example.habitbuilder.domain.vo.PlanOptionVo;
@@ -17,14 +16,13 @@ import com.example.habitbuilder.mapper.PlanMapper;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IPlanService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.habitbuilder.utils.LoginHelper;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,11 +49,11 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
 	@Autowired
 	private HistoryConversationMapper historyConversationMapper;
 	@Autowired
-	private LoginHelper loginHelper;
+	private JwtUtil jwtUtil;
 
 	@Override
 	public List<PlanOptionVo> dailyPlanOptions(String token, LocalDate date) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		return planMapper.getDailyPlanOptions(userId, date);
 	}
 
@@ -66,7 +64,8 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
 		return plan != null ? plan.getUserId() : null;
 	}
 
-	public Plan addPlan(Plan plan) {
+	public Plan addPlan(String token,Plan plan) {
+		plan.setUserId(jwtUtil.extractUserId(token));
 		planMapper.insert(plan);
 		return plan;
 	}

@@ -7,16 +7,13 @@ import com.example.habitbuilder.mapper.PlanMapper;
 import com.example.habitbuilder.pojo.Event;
 import com.example.habitbuilder.mapper.EventMapper;
 import com.example.habitbuilder.pojo.Plan;
-import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IEventService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.habitbuilder.utils.LoginHelper;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -38,17 +35,17 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 	@Autowired
 	private PlanMapper planMapper;
 	@Autowired
-	private LoginHelper loginHelper;
+	private JwtUtil jwtUtil;
 
 	@Override
 	public List<EventVo> getEventList(String token, EventBo bo) {
-		bo.setUserId(loginHelper.getUserId(token));
+		bo.setUserId(jwtUtil.extractUserId(token));
 		return eventMapper.getEventList(bo);
 	}
 
 	@Override
 	public void addEvent(String token, Event event) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		Plan plan = planMapper.selectById(event.getPlanId());
 		if (userId == plan.getUserId()) {
 			eventMapper.insert(event);
@@ -57,17 +54,20 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 
 	@Override
 	public void changeEvent(String token, Event event) {
-		Plan plan = planMapper.selectById(event.getPlanId());
-		if (plan.getUserId() == loginHelper.getUserId(token)) {
+/*		Plan plan = planMapper.selectById(event.getPlanId());
+		System.out.println("planUserId:"+plan.getUserId()+" userId:"+jwtUtil.extractUserId(token));
+		if (plan.getUserId() == jwtUtil.extractUserId(token)) {
 			eventMapper.updateById(event);
-		}
+		}*/
+
+		eventMapper.updateById(event);
 	}
 
 	@Override
 	public void deleteEvent(String token, int eventId) {
 		Event event = eventMapper.selectById(eventId);
 		Plan plan = planMapper.selectById(event.getPlanId());
-		if (plan.getUserId() == loginHelper.getUserId(token)) {
+		if (plan.getUserId() == jwtUtil.extractUserId(token)) {
 			eventMapper.updateById(event);
 		}
 	}
@@ -104,9 +104,9 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 	}
 
 	@Override
-	public List<Event> dailyEvent(int userId, LocalDate date) {
-		QueryWrapper<Plan> queryWrapper1 = new QueryWrapper<>();
-		queryWrapper1.eq("userId", userId);
+	public List<EventVo> dailyEvent(String token, LocalDate date) {
+/*		QueryWrapper<Plan> queryWrapper1 = new QueryWrapper<>();
+		queryWrapper1.eq("userId", jwtUtil.extractUserId(token));
 		List<Plan> plans = planMapper.selectList(queryWrapper1);
 		List<Integer> planIds = plans.stream()
 				.map(Plan::getPlanId)
@@ -116,9 +116,13 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 			return new ArrayList<>();
 		}
 		QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
-		queryWrapper.in("planId", planIds).eq("executionDate", date);
-		List<Event> events = eventMapper.selectList(queryWrapper);
-		events.sort(Comparator.comparing(Event::getStartTime));
+		queryWrapper.in("planId", planIds).eq("executionDate", date);*/
+		EventBo bo = new EventBo();
+		bo.setUserId(jwtUtil.extractUserId(token));
+		bo.setDate(date);
+		System.out.println(bo);
+		List<EventVo> events = eventMapper.getEventList(bo);
+		events.sort(Comparator.comparing(EventVo::getStartTime));
 		return events;
 	}
 
@@ -129,7 +133,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 	}
 
 	@Override
-	public Object setColor(int userId, LocalDate localDate) {
+	public Object setColor(String token, LocalDate localDate) {
+		int userId = jwtUtil.extractUserId(token);
 		class Temp {
 			public LocalDate localDate;
 			public int type;

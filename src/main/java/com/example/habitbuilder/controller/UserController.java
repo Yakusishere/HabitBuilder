@@ -1,21 +1,16 @@
 package com.example.habitbuilder.controller;
 
 import com.example.habitbuilder.domain.PageQuery;
-import com.example.habitbuilder.domain.bo.UserBo;
-import com.example.habitbuilder.mapper.*;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IUserService;
-import com.example.habitbuilder.serviceImpl.UserServiceImpl;
 import com.example.habitbuilder.utils.JwtUtil;
-import com.example.habitbuilder.utils.LoginHelper;
 import com.example.habitbuilder.utils.LoginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -118,7 +113,7 @@ public class UserController {
                 Map<String, Object> responseData = new HashMap<>();
                 responseData.put("token", token);
                 responseData.put("manager", user1);
-                return Result.success(responseData, "管理员登录成功");
+                return Result.success(responseData, "用户登录成功");
             } else {
                 return Result.error("密码错误");
             }

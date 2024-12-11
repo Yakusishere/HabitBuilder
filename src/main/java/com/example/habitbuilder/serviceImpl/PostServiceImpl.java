@@ -15,13 +15,12 @@ import com.example.habitbuilder.service.ICommentService;
 import com.example.habitbuilder.service.ILikepostService;
 import com.example.habitbuilder.service.IPostService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.habitbuilder.utils.LoginHelper;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,7 +43,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
 	@Autowired
 	private ICommentService commentService;
 	@Autowired
-	private LoginHelper loginHelper;
+	private JwtUtil jwtUtil;
 	@Autowired
 	private ILikepostService likepostService;
 	@Autowired
@@ -68,12 +67,12 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
 	@Override
 	public PostVo browsePost(String token, int postId) {
 		Post post = postMapper.selectById(postId);
-		return ConvertToPostVo(loginHelper.getUserId(token), post);
+		return ConvertToPostVo(jwtUtil.extractUserId(token), post);
 	}
 
 	@Override
 	public void addPost(String token, Post post) {
-		post.setUserId(loginHelper.getUserId(token));
+		post.setUserId(jwtUtil.extractUserId(token));
 		post.setPublishDate(LocalDate.now());
 		postMapper.insert(post);
 	}
@@ -87,7 +86,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
 	public void updatePost(String token, Post post) {
 		LambdaQueryWrapper<Post> lqw = new LambdaQueryWrapper<>();
 		lqw.eq(Post::getPostId, post.getPostId());
-		if(loginHelper.getUserId(token)==postMapper.selectOne(lqw).getUserId()){
+		if(jwtUtil.extractUserId(token)==postMapper.selectOne(lqw).getUserId()){
 			postMapper.update(post, lqw);
 		}
 	}

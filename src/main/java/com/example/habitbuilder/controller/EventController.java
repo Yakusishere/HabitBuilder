@@ -35,7 +35,7 @@ public class EventController {
 		return Result.success("成功新增活动");
 	}
 
-	@PutMapping("/edit")
+	@PostMapping("/edit")
 	public Result editEvent(@RequestHeader("Authorization") String token, @RequestBody Event event) {
 		eventService.changeEvent(token, event);
 		return Result.success("成功更改活动");
@@ -47,8 +47,8 @@ public class EventController {
 		return Result.success("成功删除");
 	}
 
-	@PostMapping("/setColor")
-	public Result setColor(int userId, LocalDate localDate) {
-		return Result.success(eventService.setColor(userId, localDate), "成功");
+	@GetMapping("/setColor")
+	public Result setColor(@RequestHeader("Authorization")String token, LocalDate date) {
+		return Result.success(eventService.setColor(token, date), "成功");
 	}
 }

@@ -130,7 +130,6 @@ public class JwtUtil {
         return authToken.substring(7);
     }
 
-    //
     private Date expireTime() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, 7 * 24);
@@ -147,11 +146,21 @@ public class JwtUtil {
         return new LoginManager(user);
     }
 
-    public int extractUserId(String token) throws Exception {
-        DecodedJWT jwt = resolveJwt(token);
-        Map<String, Claim> claims = jwt.getClaims();
-        return Integer.parseInt(claims.get("id").toString());
+    public int extractUserId(String token) {
+        try {
+            DecodedJWT jwt = resolveJwt(token);
+            if (jwt == null) {
+                throw new IllegalArgumentException("Invalid token");
+            }
+            Map<String, Claim> claims = jwt.getClaims();
+            return Integer.parseInt(claims.get("id").toString());
+        } catch (Exception e) {
+            // 处理异常，例如打印日志、抛出 RuntimeException 等
+            log.error("Error extracting user id", e);
+            throw new RuntimeException("Error extracting user id", e);
+        }
     }
+
 }
 
 

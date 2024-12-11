@@ -1,14 +1,9 @@
 package com.example.habitbuilder.controller;
 
-import com.example.habitbuilder.pojo.Likepost;
-import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.serviceImpl.LikepostServiceImpl;
-import com.example.habitbuilder.utils.LoginHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * <p>

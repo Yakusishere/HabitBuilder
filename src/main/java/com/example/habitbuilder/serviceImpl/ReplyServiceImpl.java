@@ -3,17 +3,15 @@ package com.example.habitbuilder.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.habitbuilder.domain.vo.ReplyVo;
 import com.example.habitbuilder.mapper.CommentMapper;
-import com.example.habitbuilder.mapper.LikereplyMapper;
 import com.example.habitbuilder.mapper.UserMapper;
 import com.example.habitbuilder.pojo.Comment;
-import com.example.habitbuilder.pojo.Likereply;
 import com.example.habitbuilder.pojo.Reply;
 import com.example.habitbuilder.mapper.ReplyMapper;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.ILikereplyService;
 import com.example.habitbuilder.service.IReplyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.habitbuilder.utils.LoginHelper;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +38,7 @@ public class ReplyServiceImpl extends ServiceImpl<ReplyMapper, Reply> implements
 	@Autowired
 	ILikereplyService likereplyService;
 	@Autowired
-	private LoginHelper loginHelper;
+	private JwtUtil jwtUtil;
 	@Autowired
 	private CommentMapper commentMapper;
 
@@ -69,7 +67,7 @@ public class ReplyServiceImpl extends ServiceImpl<ReplyMapper, Reply> implements
 
 	@Override
 	public ReplyVo addReply(String token, Reply reply) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		reply.setUserId(userId);
 		reply.setReplyDate(LocalDate.now());
 		reply.setPublishTime(LocalDateTime.now());
@@ -87,7 +85,7 @@ public class ReplyServiceImpl extends ServiceImpl<ReplyMapper, Reply> implements
 
 	@Override
 	public Boolean updateReply(String token, Reply reply) {
-		int userId = loginHelper.getUserId(token);
+		int userId = jwtUtil.extractUserId(token);
 		if (reply.getUserId() != userId)
 			return false;
 		replyMapper.updateById(reply);

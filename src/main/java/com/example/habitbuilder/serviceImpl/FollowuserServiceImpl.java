@@ -2,7 +2,6 @@ package com.example.habitbuilder.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.habitbuilder.domain.PageQuery;
 import com.example.habitbuilder.domain.vo.UserVo;
 import com.example.habitbuilder.mapper.UserMapper;
@@ -12,11 +11,10 @@ import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IFollowuserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.habitbuilder.service.IUserService;
-import com.example.habitbuilder.utils.LoginHelper;
+import com.example.habitbuilder.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +29,7 @@ import java.util.stream.Collectors;
 @Service
 public class FollowuserServiceImpl extends ServiceImpl<FollowuserMapper, Followuser> implements IFollowuserService {
     @Autowired
-    LoginHelper loginHelper;
+    JwtUtil jwtUtil;
     @Autowired
     FollowuserMapper followuserMapper;
     @Autowired
@@ -41,7 +39,7 @@ public class FollowuserServiceImpl extends ServiceImpl<FollowuserMapper, Followu
 
     @Override
     public List<UserVo> getFollowList(String token, PageQuery pageQuery) {
-        int userId = loginHelper.getUserId(token);
+        int userId = jwtUtil.extractUserId(token);
 	    return followuserMapper.selectPage(pageQuery.build(),
                         new LambdaQueryWrapper<Followuser>().eq(Followuser::getFollowerId, userId))
                 .getRecords()
@@ -58,7 +56,7 @@ public class FollowuserServiceImpl extends ServiceImpl<FollowuserMapper, Followu
 
     @Override
     public List<UserVo> getFanList(String token, PageQuery pageQuery) {
-        int userId = loginHelper.getUserId(token);
+        int userId = jwtUtil.extractUserId(token);
         return followuserMapper.selectPage(pageQuery.build(),
                         new LambdaQueryWrapper<Followuser>().eq(Followuser::getFollowerId, userId))
                 .getRecords()

@@ -34,8 +34,6 @@ public interface IUserService extends IService<User> {
     //注册
     void register(String username, String password);
 
-    String login(String username, String password);
-
     void changeScore(int userId);
 
     boolean deleteById(String token ,int userId);

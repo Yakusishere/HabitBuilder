@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author 实训小组
@@ -22,7 +22,7 @@ public interface IPlanService extends IService<Plan> {
 
     Integer findUserIdByPlanId(int planId);
 
-    Plan addPlan(Plan plan);
+    Plan addPlan(String token, Plan plan);
 
     void deletePlan(int planId);
 
@@ -32,13 +32,13 @@ public interface IPlanService extends IService<Plan> {
 
     List<Plan> getMyPlan(int userId);
 
-    int lowerScore(int userId,LocalDate date);
+    int lowerScore(int userId, LocalDate date);
 
-    List<Plan> searchPlan(String title,String tag,int userId);
+    List<Plan> searchPlan(String title, String tag, int userId);
 
     List<Plan> getPlanList();
 
-    String[] fixPlan(Integer planId,String request);
+    String[] fixPlan(Integer planId, String request);
 
     void completeFix(int planId, String[] planContent);
 
