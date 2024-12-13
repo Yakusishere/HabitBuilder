@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -48,6 +49,10 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
 	private ILikepostService likepostService;
 	@Autowired
 	private ICollectpostService collectpostService;
+    @Autowired
+    private CollectpostMapper collectpostMapper;
+    @Autowired
+    private LikepostMapper likepostMapper;
 
 	@Override
 	public List<PostOverviewVo> getPostList(Post post, PageQuery pageQuery) {
@@ -61,6 +66,58 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
 		for (Post tmp : posts) {
 			voList.add(ConvertToPostOverviewVo(tmp));
 		}
+		return voList;
+	}
+
+	@Override
+	public List<PostOverviewVo> getFavPostList(String token) {
+		int userId = jwtUtil.extractUserId(token);
+		List<Integer> postIds = collectpostMapper.selectList(
+						new LambdaQueryWrapper<Collectpost>()
+								.eq(Collectpost::getUserId, userId)
+								.select(Collectpost::getPostId)
+				).stream()
+				.map(Collectpost::getPostId)
+				.toList();
+
+		if(postIds.isEmpty()){
+			return new ArrayList<>();
+		}
+
+		List<Post> posts = postMapper.selectList(new LambdaQueryWrapper<Post>()
+				.in(Post::getPostId,postIds));
+
+		List<PostOverviewVo> voList = new ArrayList<>();
+		for (Post tmp : posts) {
+			voList.add(ConvertToPostOverviewVo(tmp));
+		}
+
+		return voList;
+	}
+
+	@Override
+	public List<PostOverviewVo> getLikePostList(String token) {
+		int userId = jwtUtil.extractUserId(token);
+		List<Integer> postIds = likepostMapper.selectList(
+						new LambdaQueryWrapper<Likepost>()
+								.eq(Likepost::getUserId, userId)
+								.select(Likepost::getPostId)
+				).stream()
+				.map(Likepost::getPostId)
+				.toList();
+
+		if(postIds.isEmpty()){
+			return new ArrayList<>();
+		}
+
+		List<Post> posts = postMapper.selectList(new LambdaQueryWrapper<Post>()
+				.in(Post::getPostId,postIds));
+
+		List<PostOverviewVo> voList = new ArrayList<>();
+		for (Post tmp : posts) {
+			voList.add(ConvertToPostOverviewVo(tmp));
+		}
+
 		return voList;
 	}
 

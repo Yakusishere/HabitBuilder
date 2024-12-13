@@ -16,10 +16,10 @@ public class EventVo {
 
 	private String description;
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+	@JsonFormat(pattern = "HH:mm")
 	private LocalDateTime startTime;
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+	@JsonFormat(pattern = "HH:mm")
 	private LocalDateTime endTime;
 
 	private LocalDate executionDate;

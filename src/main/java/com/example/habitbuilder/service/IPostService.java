@@ -20,6 +20,10 @@ public interface IPostService extends IService<Post> {
 
     List<PostOverviewVo> getPostList(Post post, PageQuery pageQuery);
 
+    List<PostOverviewVo> getFavPostList(String token);
+
+    List<PostOverviewVo> getLikePostList(String token);
+
     PostVo browsePost(String token, int postId);
 
     void addPost(String token, Post post);

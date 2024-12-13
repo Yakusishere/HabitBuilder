@@ -28,82 +28,88 @@ import java.util.List;
  */
 @Service
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements ICommentService {
-	@Autowired
-	private CommentMapper commentMapper;
+    @Autowired
+    private CommentMapper commentMapper;
 
-	@Autowired
-	private LikecommentsMapper likecommentsMapper;
+    @Autowired
+    private LikecommentsMapper likecommentsMapper;
 
-	@Autowired
-	private PostMapper postMapper;
-	@Autowired
-	private UserMapper userMapper;
-	@Autowired
-	private ReplyMapper replyMapper;
-	@Autowired
-	private IReplyService replyService;
-	@Autowired
-	private JwtUtil jwtUtil;
-	@Autowired
-	private ILikecommentsService likecommentsService;
+    @Autowired
+    private PostMapper postMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private ReplyMapper replyMapper;
+    @Autowired
+    private IReplyService replyService;
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private ILikecommentsService likecommentsService;
 
-	@Override
-	public List<CommentVo> getPostCommentSection(int postId) {
-		List<Comment> commentList = commentMapper.selectList(new LambdaQueryWrapper<Comment>().eq(Comment::getPostId, postId));
-		List<CommentVo> commentVoList = new ArrayList<>();
-		for (Comment comment : commentList) {
-			commentVoList.add(ConvertToCommentVo(comment.getUserId(), comment));
-		}
-		return commentVoList;
-	}
+    @Override
+    public List<CommentVo> getPostCommentSection(int postId) {
+        List<Comment> commentList = commentMapper.selectList(new LambdaQueryWrapper<Comment>().eq(Comment::getPostId, postId));
+        List<CommentVo> commentVoList = new ArrayList<>();
+        for (Comment comment : commentList) {
+            commentVoList.add(ConvertToCommentVo(comment.getUserId(), comment));
+        }
+        return commentVoList;
+    }
 
-	@Override
-	public List<CommentVo> listByUserId(String token) {
-		int userId = jwtUtil.extractUserId(token);
-		List<Comment> commentList = commentMapper.selectList(new LambdaQueryWrapper<Comment>().eq(Comment::getUserId, userId));
-		List<CommentVo> commentVoList = new ArrayList<>();
-		for (Comment comment : commentList) {
-			commentVoList.add(ConvertToCommentVo(comment.getUserId(), comment));
-		}
-		return commentVoList;
-	}
+    @Override
+    public List<CommentVo> listByUserId(String token) {
+        int userId = jwtUtil.extractUserId(token);
+        List<Comment> commentList = commentMapper.selectList(new LambdaQueryWrapper<Comment>().eq(Comment::getUserId, userId));
+        List<CommentVo> commentVoList = new ArrayList<>();
+        for (Comment comment : commentList) {
+            commentVoList.add(ConvertToCommentVo(comment.getUserId(), comment));
+        }
+        return commentVoList;
+    }
 
-	@Override
-	public CommentVo addComment(String token, Comment comment) {
-		comment.setUserId(jwtUtil.extractUserId(token));
-		comment.setCommentDate(LocalDate.now());
-		comment.setPublishTime(LocalDateTime.now());
-		commentMapper.insert(comment);
-		Comment tmp = commentMapper.selectOne(new LambdaQueryWrapper<Comment>()
-				.eq(Comment::getPublishTime, comment.getPublishTime()));
-		return ConvertToCommentVo(tmp.getUserId(), comment);
-	}
+    @Override
+    public CommentVo addComment(String token, Comment comment) {
+        comment.setUserId(jwtUtil.extractUserId(token));
+        comment.setCommentDate(LocalDate.now());
+        comment.setPublishTime(LocalDateTime.now());
+        commentMapper.insert(comment);
 
-	@Override
-	public void deleteComment(int commentId) {
-		commentMapper.deleteById(commentId);
-	}
+        Post post = postMapper.selectById(comment.getPostId());
+        int commentCount = post.getCommentCount();
+        post.setCommentCount(commentCount + 1);
+		postMapper.updateById(post);
 
-	@Override
-	public CommentVo ConvertToCommentVo(int userId, Comment comment) {
-		CommentVo vo = new CommentVo();
-		User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserId, comment.getUserId()));
-		vo.setCommentId(comment.getCommentId());
-		vo.setPostId(comment.getPostId());
-		vo.setContent(comment.getContent());
-		vo.setUserId(comment.getUserId());
-		vo.setNickName(user.getNickName());
-		vo.setAvatarImg(user.getAvatarImg());
-		vo.setCommentDate(comment.getCommentDate());
-		vo.setLikeCount(comment.getLikeCount());
-		vo.setReplyCount(comment.getReplyCount());
-		vo.setIsLiked(likecommentsService.getIfLikeComment(userId, comment.getCommentId()));
-		List<Reply> replyList = replyMapper.selectList(new LambdaQueryWrapper<Reply>().eq(Reply::getCommentId, comment.getCommentId()));
-		List<ReplyVo> replyVoList = new ArrayList<>();
-		for (Reply reply : replyList) {
-			replyVoList.add(replyService.convertToReplyVo(userId, reply));
-		}
-		vo.setReplyVoList(replyVoList);
-		return vo;
-	}
+        Comment tmp = commentMapper.selectOne(new LambdaQueryWrapper<Comment>()
+                .eq(Comment::getPublishTime, comment.getPublishTime()));
+        return ConvertToCommentVo(tmp.getUserId(), comment);
+    }
+
+    @Override
+    public void deleteComment(int commentId) {
+        commentMapper.deleteById(commentId);
+    }
+
+    @Override
+    public CommentVo ConvertToCommentVo(int userId, Comment comment) {
+        CommentVo vo = new CommentVo();
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserId, comment.getUserId()));
+        vo.setCommentId(comment.getCommentId());
+        vo.setPostId(comment.getPostId());
+        vo.setContent(comment.getContent());
+        vo.setUserId(comment.getUserId());
+        vo.setNickName(user.getNickName());
+        vo.setAvatarImg(user.getAvatarImg());
+        vo.setCommentDate(comment.getCommentDate());
+        vo.setLikeCount(comment.getLikeCount());
+        vo.setReplyCount(comment.getReplyCount());
+        vo.setIsLiked(likecommentsService.getIfLikeComment(userId, comment.getCommentId()));
+        List<Reply> replyList = replyMapper.selectList(new LambdaQueryWrapper<Reply>().eq(Reply::getCommentId, comment.getCommentId()));
+        List<ReplyVo> replyVoList = new ArrayList<>();
+        for (Reply reply : replyList) {
+            replyVoList.add(replyService.convertToReplyVo(userId, reply));
+        }
+        vo.setReplyVoList(replyVoList);
+        return vo;
+    }
 }

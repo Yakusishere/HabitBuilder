@@ -5,7 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.habitbuilder.domain.PageQuery;
+import com.example.habitbuilder.domain.vo.UserDetailVo;
 import com.example.habitbuilder.domain.vo.UserVo;
+import com.example.habitbuilder.mapper.FollowuserMapper;
+import com.example.habitbuilder.mapper.LikepostMapper;
+import com.example.habitbuilder.pojo.Followuser;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.mapper.UserMapper;
 import com.example.habitbuilder.service.IUserService;
@@ -34,6 +38,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 	private UserMapper userMapper;
 	@Autowired
 	private JwtUtil jwtUtil;
+    @Autowired
+    private FollowuserMapper followuserMapper;
+    @Autowired
+    private LikepostMapper likepostMapper;
 
 	@Override
 	public List<User> getUserList(User user, PageQuery pageQuery) {
@@ -55,6 +63,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 	}
 
 	@Override
+	public UserDetailVo getUserDetail(String token) {
+		int userId = jwtUtil.extractUserId(token);
+		UserDetailVo vo = new UserDetailVo();
+		User user = userMapper.selectById(userId);
+		vo.setUserName(user.getUserName());
+		vo.setNickName(user.getNickName());
+		vo.setMyScore(user.getMyScore());
+		vo.setAvatarImg(user.getAvatarImg());
+
+		int followCount = Math.toIntExact(followuserMapper.selectCount(new LambdaQueryWrapper<Followuser>()
+						.eq(Followuser::getFollowerId, userId)));
+		int fanCount = Math.toIntExact(followuserMapper.selectCount(new LambdaQueryWrapper<Followuser>()
+				.eq(Followuser::getFolloweeId, userId)));
+
+		String followCountStr;
+		String fanCountStr;
+
+		if(followCount>1000){
+			followCountStr = "1k+";
+		}else{
+			followCountStr = Integer.toString(followCount);
+		}
+
+		if(fanCount>10000){
+			fanCountStr = "1w+";
+		}else{
+			fanCountStr = Integer.toString(fanCount);
+		}
+
+		vo.setFollowCount(followCountStr);
+		vo.setFanCount(fanCountStr);
+
+		return vo;
+	}
+
+	@Override
 	public List<User> searchUser(User user) {
 		LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
 		lqw.eq(user.getUserName() != null, User::getUserName, user.getUserName());
@@ -65,11 +109,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 	@Override
 	public Boolean updateUser(String token, User user) {
 		int userId = jwtUtil.extractUserId(token);
-		User user1 = userMapper.selectOne(new LambdaQueryWrapper<User>()
-				.eq(User::getUserName, user.getUserName()));
-		if (user1.getUserId() != userId) {
-			return false;
-		}
 		user.setUserId(userId);
 		userMapper.updateById(user);
 		return true;

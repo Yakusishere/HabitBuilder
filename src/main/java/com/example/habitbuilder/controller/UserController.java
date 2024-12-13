@@ -1,6 +1,7 @@
 package com.example.habitbuilder.controller;
 
 import com.example.habitbuilder.domain.PageQuery;
+import com.example.habitbuilder.mapper.UserMapper;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.pojo.User;
 import com.example.habitbuilder.service.IUserService;
@@ -32,6 +33,8 @@ public class UserController {
 
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 获取用户列表
@@ -71,7 +74,7 @@ public class UserController {
      * @param user 用户
      * @return {@link Result }
      */
-    @PutMapping("/update")
+    @PostMapping("/update")
     public Result updateUser(@RequestHeader("Authorization") String token, @RequestBody User user) {
         if (!userService.updateUser(token, user)) {
             return Result.error("更新失败");
@@ -105,6 +108,7 @@ public class UserController {
     public Result login(@RequestBody User userRequest) {
         String username = userRequest.getUserName();
         String password = userRequest.getPassword();
+        System.out.println("username:"+username+" password:"+password);
         LoginManager user1 = (LoginManager) userService.loadUserByUsername(username);
         if (user1 != null) {
             if (passwordEncoder.matches(password, user1.getPassword())) {
@@ -140,5 +144,16 @@ public class UserController {
         } else {
             return Result.error("用户名已存在");
         }
+    }
+
+    @GetMapping("getUserInfo")
+    public Result getUserInfo(@RequestHeader("Authorization")String token){
+        int userId = jwtUtil.extractUserId(token);
+        return Result.success(userService.getByUserId(userId),"获取成功");
+    }
+
+    @GetMapping("/getUserDetail")
+    public Result getDetailedUserInfo(@RequestHeader("Authorization")String token){
+        return Result.success(userService.getUserDetail(token),"获取成功");
     }
 }

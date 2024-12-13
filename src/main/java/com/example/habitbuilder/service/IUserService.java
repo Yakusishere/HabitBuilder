@@ -2,6 +2,7 @@ package com.example.habitbuilder.service;
 
 import com.example.habitbuilder.domain.PageQuery;
 import com.example.habitbuilder.domain.bo.UserBo;
+import com.example.habitbuilder.domain.vo.UserDetailVo;
 import com.example.habitbuilder.domain.vo.UserVo;
 import com.example.habitbuilder.pojo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -23,6 +24,8 @@ public interface IUserService extends IService<User> {
     List<User> getUserList(User user, PageQuery pageQuery);
 
     User getByUserId(int userId);
+
+    UserDetailVo getUserDetail(String token);
 
     List<User> searchUser(User user);
 

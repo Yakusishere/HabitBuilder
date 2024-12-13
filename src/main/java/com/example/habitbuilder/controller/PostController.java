@@ -1,6 +1,7 @@
 package com.example.habitbuilder.controller;
 
 import com.example.habitbuilder.domain.PageQuery;
+import com.example.habitbuilder.domain.vo.PostOverviewVo;
 import com.example.habitbuilder.pojo.Post;
 import com.example.habitbuilder.pojo.Result;
 import com.example.habitbuilder.service.IPostService;
@@ -42,6 +43,24 @@ public class PostController {
     @PostMapping("/list")
     public Result getPostList(@RequestBody Post post, PageQuery pageQuery){
         return Result.success(postService.getPostList(post,pageQuery),"获取所有帖子成功");
+    }
+
+    @GetMapping("/myPostList")
+    public Result getMyPostList(@RequestHeader("Authorization")String token,PageQuery pageQuery){
+        Post post = new Post();
+        post.setUserId(jwtUtil.extractUserId(token));
+        return Result.success(postService.getPostList(post,pageQuery),"查询成功");
+    }
+
+    @GetMapping("/favPostList")
+    public Result getFavPostList(@RequestHeader("Authorization")String token){
+        List<PostOverviewVo> posts = postService.getFavPostList(token);
+        return Result.success(posts,"获取成功");
+    }
+
+    @GetMapping("/likePostList")
+    public Result getLikePostList(@RequestHeader("Authorization")String token){
+        return Result.success(postService.getLikePostList(token),"获取成功");
     }
 
     /**
@@ -96,10 +115,9 @@ public class PostController {
 
 //    @CrossOrigin(origins = "http://localhost:5173")
 //    @PostMapping("/upload")
-//    public Result uplaod(MultipartFile image) throws IOException {
-//        System.out.println("调用upload接口");
+//    public Result upload(MultipartFile image) throws IOException {
 //        String url = aliOSSUtils.upload(image);
-//        return Result.success(url);
+//        return Result.success(url,"上传成功");
 //    }
 
     @GetMapping("/searchPost")

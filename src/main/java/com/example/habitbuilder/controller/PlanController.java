@@ -111,7 +111,8 @@ public class PlanController {
     }
 
     @GetMapping("/myPlan")
-    public Result getMyPlan(int userId) {
+    public Result getMyPlan(@RequestHeader("Authorization")String token) {
+        int userId = jwtUtil.extractUserId(token);
         return Result.success(planServiceImpl.getMyPlan(userId), "获取我的所有计划成功"); //可以加判断返回
     }
 

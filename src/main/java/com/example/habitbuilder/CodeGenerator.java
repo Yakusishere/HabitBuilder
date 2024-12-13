@@ -11,10 +11,9 @@ import java.util.Collections;
 
 public class CodeGenerator {
     public static void main(String[] args) {
-        // 使用 FastAutoGenerator 快速配置代码生成器
         FastAutoGenerator.create("jdbc:mysql://localhost:3306/test1?serverTimezone=UTC", "root", "123456")
                 .globalConfig(builder -> {
-                    builder.author("实训小组") // 设置作者
+                    builder.author("javaEE") // 设置作者
                             .outputDir("D:\\HabitBuilder-final\\HabitBuilder-final\\HabitBuilder\\src\\main\\java")// 输出目录
                             .dateType(DateType.TIME_PACK)
                             .enableSwagger(); //时间戳样式 全部时间
